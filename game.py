@@ -62,9 +62,9 @@ class Goal(spyral.sprite.Sprite):
 		self.val = random.randrange(0,20,1)
 		self.render()
 	
-	def render(self)
+	def render(self):
 		self.image = fonts['goal'].render("Goal: %d" % self.val,True,colors['goal'])
-		self.rect.midtop = geom['goalx'],geom['text_height'])
+		self.rect.midtop = (geom['goalx'],geom['text_height'])
 
 class Length(spyral.sprite.Sprite):
 	def __init__(self):
@@ -76,7 +76,7 @@ class Length(spyral.sprite.Sprite):
 		self.image = fonts['length'].render("Length: %d" % self.val,True,colors['length'])
 		self.rect.midtop = (geom['lengthx'],geom['text_height'])
 		
-class Operator(spyral.sprite.Sprite)
+class Operator(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake):
 		spyral.sprite.Sprite.__init__(self)
 		self.location = self.openSpace(foodItems,snake)
@@ -119,6 +119,9 @@ class Snake(spyral.sprite.Sprite):
 		self.render()
 	
 	def render(self):
+		#render the nodes
+	
+		#render the head
 		self.rect.center = (self.location[0]*48 + 24,self.location[1]*48 + 24)
 		
 class Game(spyral.scene.Scene):
@@ -139,6 +142,7 @@ class Game(spyral.scene.Scene):
 		self.camera.draw()
 	
 	def update(self,tick):
+		self.snake.render()
 		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_SPACE:
@@ -166,6 +170,7 @@ class Game(spyral.scene.Scene):
 					self.moving = False
 		pygame.event.clear()
 		
+		
 		if self.moving == True:
 		
 			#test if we've hit a wall or self
@@ -181,11 +186,25 @@ class Game(spyral.scene.Scene):
 				self.snake.location = (self.snake.location[0],self.snake.location[1]+1)
 			elif self.snake.direction == directions['right']:
 				self.snake.location = (self.snake.location[0]+1,self.snake.location[1])
-			elif self.snake.direction == directions['right']:
+			elif self.snake.direction == directions['left']:
 				self.snake.location = (self.snake.location[0]-1,self.snake.location[1])
 			
+			print self.snake.location
 			
 		self.group.update()
 		
-		
-					
+if __name__ == "__main__":
+	spyral.init()
+	
+	colors['background'] = (0, 0, 0)
+	colors['head'] = (255,255,255)
+	images['head'] = spyral.util.new_surface(47,47)
+	images['head'].fill(colors['head'])
+	
+	spyral.director.init((1200,900), ticks_per_second=TICKS_PER_SECOND)
+	spyral.director.push(Game())
+	spyral.director.clock.use_wait = False
+	pygame.event.set_allowed(None)
+	pygame.event.set_allowed(pygame.KEYDOWN)
+	pygame.event.set_allowed(pygame.KEYUP)
+	spyral.director.run()

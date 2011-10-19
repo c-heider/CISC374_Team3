@@ -102,6 +102,7 @@ class SnakeNode(spyral.sprite.Sprite):
 		self.render()
 	
 	def render(self):
+		#for moving sprites in this game, the image changes every time the direction does
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
 		self.rect.center = (self.location[0]*48 + 24,self.location[1]*48 + 24)
 		
@@ -133,9 +134,15 @@ class Game(spyral.scene.Scene):
 		self.group.add(self.snake)
 		self.moving = False
 	
-	def update(self):
+	def render(self):
+		self.group.draw()
+		self.camera.draw()
+	
+	def update(self,tick):
 		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_SPACE:
+					spyral.director.pop()
 				if event.key == pygame.K_UP:
 					self.moving = True
 					self.snake.direction = directions['up']
@@ -159,6 +166,25 @@ class Game(spyral.scene.Scene):
 					self.moving = False
 		pygame.event.clear()
 		
+		if self.moving == True:
+		
+			#test if we've hit a wall or self
+		
+			#starting at the end of the snake, move the nodes. So, the direction and location of
+			#the second-to-last node become those of the last node and so on up the chain, until
+			#the first node goes to where the head is
+			
+			#move the head
+			if self.snake.direction == directions['up']:
+				self.snake.location = (self.snake.location[0],self.snake.location[1]-1)
+			elif self.snake.direction == directions['down']:
+				self.snake.location = (self.snake.location[0],self.snake.location[1]+1)
+			elif self.snake.direction == directions['right']:
+				self.snake.location = (self.snake.location[0]+1,self.snake.location[1])
+			elif self.snake.direction == directions['right']:
+				self.snake.location = (self.snake.location[0]-1,self.snake.location[1])
+			
+			
 		self.group.update()
 		
 		

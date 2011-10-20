@@ -4,6 +4,9 @@ import random
 import math
 
 TICKS_PER_SECOND = 6
+HEIGHT = 600
+WIDTH = 800
+BLOCK_SIZE = 32
 
 operators = ["+","-","*","/"]
 directions = {}
@@ -13,7 +16,7 @@ directions['right'] = 2
 directions['left'] = 3
 
 # locations are in terms of the discrete grid, with indexing beginning at 0. top-left is origin.
-# pixel_x is grid_x*48 + 24, which corresponds to the centers of sprites
+# pixel_x is grid_x*BLOCK_SIZE + BLOCK_SIZE/2, which corresponds to the centers of sprites
 
 fonts = {}
 geom = {}
@@ -21,8 +24,8 @@ images = {}
 colors = {}
 strings = {}
 
-# snake is a list of locations occupied by the snake
-def openSpace(foodItems,snake):
+# snake is a list of SnakeNodes, head is the location of the head
+def openSpace(foodItems,snake,head):
 	taken = True
 	while taken:
 		taken = False
@@ -31,8 +34,10 @@ def openSpace(foodItems,snake):
 			if item.location == loc:
 				taken = True
 		for s in snake:
-			if s == loc:
+			if s.location == loc:
 				taken = True
+		if head == loc:
+			taken = True
 	return loc
 
 class Score(spyral.sprite.Sprite):
@@ -77,26 +82,25 @@ class Length(spyral.sprite.Sprite):
 		self.rect.midtop = (geom['lengthx'],geom['text_height'])
 		
 class Operator(spyral.sprite.Sprite):
-	def __init__(self,foodItems,snake):
+	def __init__(self,foodItems,snake,head):
 		spyral.sprite.Sprite.__init__(self)
-		self.location = self.openSpace(foodItems,snake)
+		self.location = openSpace(foodItems,snake,head)
 		self.val = operators[random.randrange(0,4,1)]
 		self.image = fonts['operator'].render(self.val,True,colors['operator'])
-		self.rect.center = (self.location[0]*48 + 24,self.location[1]*48 + 24)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 class Number(spyral.sprite.Sprite):
-	def __init__(self,foodItems,snake):
+	def __init__(self,foodItems,snake,head):
 		spyral.sprite.Sprite.__init__(self)
-		self.location = self.openSpace(foodItems,snake)
+		self.location = openSpace(foodItems,snake,head)
 		self.val = random.randrange(0,15,1)
 		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
-		self.rect.center = (self.location[0]*48 + 24,self.location[1]*48 + 24)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 class SnakeNode(spyral.sprite.Sprite):
 	def __init__(self,val,dir,loc):
 		sypral.sprite.Sprite.__init__(self)
 		self.value = val
-		self.next = None
 		self.direction = dir
 		self.location = loc
 		self.render()
@@ -104,14 +108,14 @@ class SnakeNode(spyral.sprite.Sprite):
 	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
-		self.rect.center = (self.location[0]*48 + 24,self.location[1]*48 + 24)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 class Snake(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
 		self.image = images['head']
 		self.location = (11,8)
-		self.firstNode = None
+		self.nodes = []
 		self.clearing = False
 		self.collapsing = False
 		self.length = 0
@@ -122,18 +126,23 @@ class Snake(spyral.sprite.Sprite):
 		#render the nodes
 	
 		#render the head
-		self.rect.center = (self.location[0]*48 + 24,self.location[1]*48 + 24)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 class Game(spyral.scene.Scene):
 	def __init__(self):
 		spyral.scene.Scene.__init__(self)
 		self.camera = spyral.director.get_camera()
 		self.group = spyral.sprite.Group(self.camera)
-		background = spyral.util.new_surface((1200,900))
+		background = spyral.util.new_surface((WIDTH,HEIGHT))
 		background.fill(colors['background'])
 		self.camera.set_background(background)
 		self.goal = 15
 		self.snake = Snake()
+		self.foodItems = [Operator([],[],self.snake.location)]
+		for n in range(0,3):
+			self.foodItems.append(Number(self.foodItems,[],self.snake.location))
+		for i in self.foodItems:
+			self.group.add(i,)
 		self.group.add(self.snake)
 		self.moving = False
 	
@@ -142,7 +151,7 @@ class Game(spyral.scene.Scene):
 		self.camera.draw()
 	
 	def update(self,tick):
-		self.snake.render()
+
 		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_SPACE:
@@ -179,6 +188,7 @@ class Game(spyral.scene.Scene):
 			#the second-to-last node become those of the last node and so on up the chain, until
 			#the first node goes to where the head is
 			
+			
 			#move the head
 			if self.snake.direction == directions['up']:
 				self.snake.location = (self.snake.location[0],self.snake.location[1]-1)
@@ -189,19 +199,30 @@ class Game(spyral.scene.Scene):
 			elif self.snake.direction == directions['left']:
 				self.snake.location = (self.snake.location[0]-1,self.snake.location[1])
 			
-			print self.snake.location
+			#test for target
 			
+		self.snake.render()
 		self.group.update()
+
 		
 if __name__ == "__main__":
 	spyral.init()
 	
 	colors['background'] = (0, 0, 0)
 	colors['head'] = (255,255,255)
-	images['head'] = spyral.util.new_surface(47,47)
+	colors['node'] = (255,255,255)
+	colors['number'] = (255,255,255)
+	colors['operator'] = (255,255,255)
+	
+	
+	images['head'] = spyral.util.new_surface(BLOCK_SIZE,BLOCK_SIZE)
 	images['head'].fill(colors['head'])
 	
-	spyral.director.init((1200,900), ticks_per_second=TICKS_PER_SECOND)
+	fonts['node'] = pygame.font.SysFont(None,BLOCK_SIZE)
+	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
+	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
+	
+	spyral.director.init((WIDTH,HEIGHT), ticks_per_second=TICKS_PER_SECOND)
 	spyral.director.push(Game())
 	spyral.director.clock.use_wait = False
 	pygame.event.set_allowed(None)

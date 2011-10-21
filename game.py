@@ -122,7 +122,7 @@ class SnakeNode(spyral.sprite.Sprite):
 	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
-		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 
 		
@@ -178,32 +178,35 @@ class Game(spyral.scene.Scene):
 		
 		if self.count == 0:
 			self.snake.oldLocation = self.snake.location
+			for n in self.snake.nodes:
+				n.oldLocation = n.location
 			
 			#get keyboard input
+			newDirection = self.snake.direction
 			for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
 						spyral.director.pop()
 					if event.key == pygame.K_UP:
 						self.moving = True
-						self.snake.direction = directions['up']
+						newDirection = directions['up']
 					elif event.key == pygame.K_DOWN:
 						self.moving = True
-						self.snake.direction = directions['down']
+						newDirection = directions['down']
 					elif event.key == pygame.K_RIGHT:
 						self.moving = True
-						self.snake.direction = directions['right']
+						newDirection = directions['right']
 					elif event.key == pygame.K_LEFT:
 						self.moving = True
-						self.snake.direction = directions['left']
+						newDirection = directions['left']
 				elif event.type == pygame.KEYUP:
-					if event.key == pygame.K_UP and self.snake.direction == directions['up']:
+					if event.key == pygame.K_UP and newDirection == directions['up']:
 						self.moving = False
-					elif event.key == pygame.K_DOWN and self.snake.direction == directions['down']:
+					elif event.key == pygame.K_DOWN and newDirection == directions['down']:
 						self.moving = False
-					elif event.key == pygame.K_RIGHT and self.snake.direction == directions['right']:
+					elif event.key == pygame.K_RIGHT and newDirection == directions['right']:
 						self.moving = False
-					elif event.key == pygame.K_LEFT and self.snake.direction == directions['left']:
+					elif event.key == pygame.K_LEFT and newDirection == directions['left']:
 						self.moving = False
 			pygame.event.clear()
 			
@@ -212,13 +215,13 @@ class Game(spyral.scene.Scene):
 
 			
 				#get new location
-				if self.snake.direction == directions['up']:
+				if newDirection == directions['up']:
 					newloc = (self.snake.location[0],self.snake.location[1]-1)
-				elif self.snake.direction == directions['down']:
+				elif newDirection == directions['down']:
 					newloc = (self.snake.location[0],self.snake.location[1]+1)
-				elif self.snake.direction == directions['right']:
+				elif newDirection == directions['right']:
 					newloc = (self.snake.location[0]+1,self.snake.location[1])
-				elif self.snake.direction == directions['left']:
+				elif newDirection == directions['left']:
 					newloc = (self.snake.location[0]-1,self.snake.location[1])
 						
 				#test if we've hit a wall or self		
@@ -243,12 +246,18 @@ class Game(spyral.scene.Scene):
 					if len(self.snake.nodes) > 1:
 						for i in range(0,len(self.snake.nodes)-1):
 							self.snake.nodes[i].location = self.snake.nodes[i+1].location
+							self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
 
 				if len(self.snake.nodes) > 0:
 					self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
+					self.snake.nodes[len(self.snake.nodes)-1].direction = self.snake.direction
+				
+				if found == True:
+					self.snake.nodes[len(self.snake.nodes)-1].oldLocation = self.snake.location
 				
 				#move the head
 				self.snake.location = newloc
+				self.snake.direction = newDirection
 				
 				#get new FoodItem if necessary
 				if found:
@@ -268,6 +277,9 @@ class Game(spyral.scene.Scene):
 		if self.count != 0:
 			if self.snake.location != self.snake.oldLocation:
 				step(self.snake,self.count)
+			for n in self.snake.nodes:
+				if n.location != n.oldLocation:
+					step(n,self.count)
 			
 			
 		self.group.update()

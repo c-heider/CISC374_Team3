@@ -120,6 +120,7 @@ class Snake(spyral.sprite.Sprite):
 		self.length = 0
 		self.direction = directions['up']
 		self.render()
+		self.lastType = 'Operator'
 	
 	def render(self):
 		#render the nodes
@@ -201,13 +202,13 @@ class Game(spyral.scene.Scene):
 			#test for target
 			found = False
 			for f in self.foodItems:
-				if f.location == newloc:
+				if f.location == newloc and type(f).__name__ != self.snake.lastType:
 					found = True
 					newNode = SnakeNode(f.val)
 					self.snake.nodes.append(newNode)
 					self.group.add(newNode)
 					itemName = type(f).__name__
-
+					self.snake.lastType = itemName
 					self.foodItems.remove(f)
 					f.kill()
 					break

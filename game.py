@@ -3,10 +3,13 @@ import spyral
 import random
 import math
 
-TICKS_PER_SECOND = 6
+MOVES_PER_SECOND = 4
+TICKS_PER_SECOND = 16
+TICKS_PER_MOVE = TICKS_PER_SECOND/MOVES_PER_SECOND
 HEIGHT = 600
 WIDTH = 800
 BLOCK_SIZE = 32
+STEP = float(BLOCK_SIZE/TICKS_PER_MOVE)
 
 operators = ["+","-","*","/"]
 directions = {}
@@ -39,6 +42,17 @@ def openSpace(foodItems,snake,head):
 		if head == loc:
 			taken = True
 	return loc
+	
+def step(sprite,count):
+	if sprite.direction == directions['up']:
+		sprite.rect.center = (sprite.rect.center[0],sprite.rect.center[1]-int(STEP))
+	elif sprite.direction == directions['down']:
+		sprite.rect.center = (sprite.rect.center[0],sprite.rect.center[1]+int(STEP))
+	elif sprite.direction == directions['left']:
+		sprite.rect.center = (sprite.rect.center[0]-int(STEP),sprite.rect.center[1])
+	else:
+		sprite.rect.center = (sprite.rect.center[0]+int(STEP),sprite.rect.center[1])
+
 
 class Score(spyral.sprite.Sprite):
 	def __init__(self):
@@ -102,6 +116,7 @@ class SnakeNode(spyral.sprite.Sprite):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
 		self.location = (0,0)
+		self.oldLocation = (0,0)
 		self.render()
 	
 	def render(self):
@@ -109,11 +124,14 @@ class SnakeNode(spyral.sprite.Sprite):
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
+
+		
 class Snake(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
 		self.image = images['head']
 		self.location = (11,8)
+		self.oldLocation = self.location
 		self.nodes = []
 		self.clearing = False
 		self.collapsing = False
@@ -127,7 +145,7 @@ class Snake(spyral.sprite.Sprite):
 		for n in self.nodes:
 			n.render()
 		#render the head
-		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 class Game(spyral.scene.Scene):
 	def __init__(self):
@@ -148,100 +166,115 @@ class Game(spyral.scene.Scene):
 			self.group.add(i,)
 		self.group.add(self.snake)
 		self.moving = False
+		self.count = 0
 	
 	def render(self):
 		self.group.draw()
 		self.camera.draw()
 	
 	def update(self,tick):
-
-		#get keyboard input
-		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_SPACE:
-					spyral.director.pop()
-				if event.key == pygame.K_UP:
-					self.moving = True
-					self.snake.direction = directions['up']
-				elif event.key == pygame.K_DOWN:
-					self.moving = True
-					self.snake.direction = directions['down']
-				elif event.key == pygame.K_RIGHT:
-					self.moving = True
-					self.snake.direction = directions['right']
-				elif event.key == pygame.K_LEFT:
-					self.moving = True
-					self.snake.direction = directions['left']
-			elif event.type == pygame.KEYUP:
-				if event.key == pygame.K_UP and self.snake.direction == directions['up']:
-					self.moving = False
-				elif event.key == pygame.K_DOWN and self.snake.direction == directions['down']:
-					self.moving = False
-				elif event.key == pygame.K_RIGHT and self.snake.direction == directions['right']:
-					self.moving = False
-				elif event.key == pygame.K_LEFT and self.snake.direction == directions['left']:
-					self.moving = False
-		pygame.event.clear()
+		self.count += 1
+		self.count %= TICKS_PER_MOVE		
 		
-		
-		if self.moving == True:
+		if self.count == 0:
+			self.snake.oldLocation = self.snake.location
+			
+			#get keyboard input
+			for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_SPACE:
+						spyral.director.pop()
+					if event.key == pygame.K_UP:
+						self.moving = True
+						self.snake.direction = directions['up']
+					elif event.key == pygame.K_DOWN:
+						self.moving = True
+						self.snake.direction = directions['down']
+					elif event.key == pygame.K_RIGHT:
+						self.moving = True
+						self.snake.direction = directions['right']
+					elif event.key == pygame.K_LEFT:
+						self.moving = True
+						self.snake.direction = directions['left']
+				elif event.type == pygame.KEYUP:
+					if event.key == pygame.K_UP and self.snake.direction == directions['up']:
+						self.moving = False
+					elif event.key == pygame.K_DOWN and self.snake.direction == directions['down']:
+						self.moving = False
+					elif event.key == pygame.K_RIGHT and self.snake.direction == directions['right']:
+						self.moving = False
+					elif event.key == pygame.K_LEFT and self.snake.direction == directions['left']:
+						self.moving = False
+			pygame.event.clear()
+			
+			
+			if self.moving == True:
 
-		
-			#get new location
-			if self.snake.direction == directions['up']:
-				newloc = (self.snake.location[0],self.snake.location[1]-1)
-			elif self.snake.direction == directions['down']:
-				newloc = (self.snake.location[0],self.snake.location[1]+1)
-			elif self.snake.direction == directions['right']:
-				newloc = (self.snake.location[0]+1,self.snake.location[1])
-			elif self.snake.direction == directions['left']:
-				newloc = (self.snake.location[0]-1,self.snake.location[1])
-					
-			#test if we've hit a wall or self		
 			
-			#test for target
-			found = False
-			for f in self.foodItems:
-				if f.location == newloc and type(f).__name__ != self.snake.lastType:
-					found = True
-					newNode = SnakeNode(f.val)
-					self.snake.nodes.append(newNode)
-					self.group.add(newNode)
-					itemName = type(f).__name__
-					self.snake.lastType = itemName
-					self.foodItems.remove(f)
-					f.kill()
-					break
+				#get new location
+				if self.snake.direction == directions['up']:
+					newloc = (self.snake.location[0],self.snake.location[1]-1)
+				elif self.snake.direction == directions['down']:
+					newloc = (self.snake.location[0],self.snake.location[1]+1)
+				elif self.snake.direction == directions['right']:
+					newloc = (self.snake.location[0]+1,self.snake.location[1])
+				elif self.snake.direction == directions['left']:
+					newloc = (self.snake.location[0]-1,self.snake.location[1])
+						
+				#test if we've hit a wall or self		
+				
+				#test for target
+				found = False
+				for f in self.foodItems:
+					if f.location == newloc and type(f).__name__ != self.snake.lastType:
+						found = True
+						newNode = SnakeNode(f.val)
+						self.snake.nodes.append(newNode)
+						self.group.add(newNode)
+						itemName = type(f).__name__
+						self.snake.lastType = itemName
+						self.foodItems.remove(f)
+						f.kill()
+						break
 
-			
-			#move the nodes			
-			if found == False:
-				if len(self.snake.nodes) > 1:
-					for i in range(0,len(self.snake.nodes)-1):
-						self.snake.nodes[i].location = self.snake.nodes[i+1].location
+				
+				#move the nodes			
+				if found == False:
+					if len(self.snake.nodes) > 1:
+						for i in range(0,len(self.snake.nodes)-1):
+							self.snake.nodes[i].location = self.snake.nodes[i+1].location
 
-			if len(self.snake.nodes) > 0:
-				self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
-			
-			#move the head
-			self.snake.location = newloc
-			
-			#get new FoodItem if necessary
-			if found:
-				if itemName == 'Operator':
-					newItem = Operator(self.foodItems,self.snake.nodes,self.snake.location)
-					self.foodItems.append(newItem)
-					self.group.add(newItem)
-				else:
-					newItem = Number(self.foodItems,self.snake.nodes,self.snake.location)
-					self.foodItems.append(newItem)
-					self.group.add(newItem)
-					
-			#only call render() after possible image changes. Maybe later detect direction changes
+				if len(self.snake.nodes) > 0:
+					self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
+				
+				#move the head
+				self.snake.location = newloc
+				
+				#get new FoodItem if necessary
+				if found:
+					if itemName == 'Operator':
+						newItem = Operator(self.foodItems,self.snake.nodes,self.snake.location)
+						self.foodItems.append(newItem)
+						self.group.add(newItem)
+					else:
+						newItem = Number(self.foodItems,self.snake.nodes,self.snake.location)
+						self.foodItems.append(newItem)
+						self.group.add(newItem)
+						
+				#only call render() after possible image changes. Maybe later detect direction changes
 			self.snake.render()
+		
+		#step each Sprite towards its new location
+		if self.count != 0:
+			if self.snake.location != self.snake.oldLocation:
+				step(self.snake,self.count)
+			
+			
 		self.group.update()
 
-		
+
+
+
 if __name__ == "__main__":
 	spyral.init()
 	

@@ -122,14 +122,14 @@ class Number(spyral.sprite.Sprite):
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 class SnakeNode(spyral.sprite.Sprite):
-	def __init__(self,val,head):
+	def __init__(self,val):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
 		self.location = (0,0)
 		self.oldLocation = (0,0)
-		self.render(head)
+		self.render()
 	
-	def render(self,head):
+	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
 		self.rect.center = self.offset()
@@ -195,7 +195,7 @@ class Snake(spyral.sprite.Sprite):
 	def render(self):
 		#render the nodes
 		for n in self.nodes:
-			n.render(self)
+			n.render()
 		#render the head
 		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
@@ -332,7 +332,7 @@ class Game(spyral.scene.Scene):
 				for f in self.foodItems:
 					if f.location == newloc and type(f).__name__ != self.snake.lastType:
 						found = True
-						newNode = SnakeNode(f.val,self.snake)
+						newNode = SnakeNode(f.val)
 						self.snake.nodes.append(newNode)
 						self.group.add(newNode)
 						itemName = type(f).__name__

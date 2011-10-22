@@ -3,8 +3,8 @@ import spyral
 import random
 import math
 
-MOVES_PER_SECOND = 4
-TICKS_PER_SECOND = 16
+MOVES_PER_SECOND = 5
+TICKS_PER_SECOND = 15
 TICKS_PER_MOVE = TICKS_PER_SECOND/MOVES_PER_SECOND
 HEIGHT = 600
 WIDTH = 800
@@ -43,7 +43,7 @@ def openSpace(foodItems,snake,head):
 			taken = True
 	return loc
 	
-def step(sprite,count):
+def step(sprite):
 	if sprite.direction == directions['up']:
 		sprite.rect.center = (sprite.rect.center[0],sprite.rect.center[1]-int(STEP))
 	elif sprite.direction == directions['down']:
@@ -177,7 +177,53 @@ class Game(spyral.scene.Scene):
 			self.group.add(i,)
 		self.group.add(self.snake)
 		self.moving = False
+		self.collapsing = False
+		self.collapseIndex = 0
+		self.collapseNodes = []
 		self.count = 0
+		
+	def findNextOp(self):
+		for n in self.snake.nodes:
+			if n.value == "/" or n.value == "*":
+				return n
+		for n in self.snake.nodes:
+			if n.value == "+" or n.value == "-":
+				return n
+	
+	def exprEval(self):
+		if self.collapseNodes[1].value == "+":
+			return (self.collapseNodes[0].value+self.collapseNodes[2].value)
+		elif self.collapseNodes[1].value == "-":
+			return (self.collapseNodes[0].value-self.collapseNodes[2].value)
+		elif self.collapseNodes[1].value == "/":
+			return (self.collapseNodes[0].value/self.collapseNodes[2].value)
+		elif self.collapseNodes[1].value == "*":
+			return (self.collapseNodes[0].value*self.collapseNodes[2].value)
+			
+	def collapse(self):
+		if self.collapseIndex == 0:
+			operatorNode = self.findNextOp()
+			opIndex = self.snake.nodes.index(operatorNode)
+			self.collapseNodes.append(self.snake.nodes[opIndex-1])
+			self.collapseNodes.append(self.snake.nodes[opIndex])
+			self.collapseNodes.append(self.snake.nodes[opIndex+1])
+			for n in self.collapseNodes:
+				n.kill()
+			newNode = SnakeNode(self.exprEval())
+			self.group.add(newNode)
+			newNode.location = self.snake.nodes[opIndex].location
+			newNode.oldLocation = newNode.location
+			newNode.direction = self.snake.nodes[opIndex].direction
+			self.snake.nodes.insert(opIndex,newNode)
+			for n in self.collapseNodes:
+				self.snake.nodes.remove(n)
+				
+		self.collapseIndex = 0
+		self.collapsing = False
+		for n in self.collapseNodes[:]:
+			self.collapseNodes.remove(n)
+			
+					
 	
 	def render(self):
 		self.group.draw()
@@ -187,7 +233,7 @@ class Game(spyral.scene.Scene):
 		self.count += 1
 		self.count %= TICKS_PER_MOVE		
 		
-		if self.count == 0:
+		if self.count == 0 and self.collapsing == False:
 			self.snake.oldLocation = self.snake.location
 			for n in self.snake.nodes:
 				n.oldLocation = n.location
@@ -198,6 +244,9 @@ class Game(spyral.scene.Scene):
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
 						spyral.director.pop()
+					if event.key == pygame.K_c:
+						self.collapsing = True
+						return
 					if event.key == pygame.K_UP:
 						self.moving = True
 						newDirection = directions['up']
@@ -281,16 +330,23 @@ class Game(spyral.scene.Scene):
 						self.foodItems.append(newItem)
 						self.group.add(newItem)
 						
-				#only call render() after possible image changes. Maybe later detect direction changes
+			
+			self.snake.render()
+			
+		if self.collapsing and self.count == 0:
+			self.snake.oldLocation = self.snake.location
+			for n in self.snake.nodes:
+				n.oldLocation = n.location
+			self.collapse()
 			self.snake.render()
 		
 		#step each Sprite towards its new location
 		if self.count != 0:
 			if self.snake.location != self.snake.oldLocation:
-				step(self.snake,self.count)
+				step(self.snake)
 			for n in self.snake.nodes:
 				if n.location != n.oldLocation:
-					step(n,self.count)
+					step(n)
 			
 			
 		self.group.update()

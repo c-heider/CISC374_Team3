@@ -122,17 +122,58 @@ class Number(spyral.sprite.Sprite):
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 class SnakeNode(spyral.sprite.Sprite):
-	def __init__(self,val):
+	def __init__(self,val,head):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
 		self.location = (0,0)
 		self.oldLocation = (0,0)
-		self.render()
+		self.render(head)
 	
-	def render(self):
+	def render(self,head):
 		#for moving sprites in this game, the image changes every time the direction does
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
-		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		self.rect.center = self.offset()
+
+	#for the "wiggle" can be much shorter but I dont have time to figure it out
+	def offset(self):
+		pos = (0,0)
+		if self.location[0]%4 == 0:
+			if self.location[1]%4 == 0:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
+			elif self.location[1]%4 == 1:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
+			elif self.location[1]%4 == 2:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
+			elif self.location[1]%4 == 3:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
+		elif self.location[0]%4 == 1:
+			if self.location[1]%4 == 0:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+			elif self.location[1]%4 == 1:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+			elif self.location[1]%4 == 2:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+			elif self.location[1]%4 == 3:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		elif self.location[0]%4 == 2:
+			if self.location[1]%4 == 0:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
+			elif self.location[1]%4 == 1:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
+			elif self.location[1]%4 == 2:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
+			elif self.location[1]%4 == 3:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
+		elif self.location[0]%4 == 3:
+			if self.location[1]%4 == 0:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+			elif self.location[1]%4 == 1:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+			elif self.location[1]%4 == 2:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+			elif self.location[1]%4 == 3:
+				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		return pos
 		
 
 		
@@ -154,7 +195,7 @@ class Snake(spyral.sprite.Sprite):
 	def render(self):
 		#render the nodes
 		for n in self.nodes:
-			n.render()
+			n.render(self)
 		#render the head
 		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
@@ -242,7 +283,7 @@ class Game(spyral.scene.Scene):
 				for f in self.foodItems:
 					if f.location == newloc and type(f).__name__ != self.snake.lastType:
 						found = True
-						newNode = SnakeNode(f.val)
+						newNode = SnakeNode(f.val,self.snake)
 						self.snake.nodes.append(newNode)
 						self.group.add(newNode)
 						itemName = type(f).__name__

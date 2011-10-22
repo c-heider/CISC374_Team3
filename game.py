@@ -99,7 +99,17 @@ class Operator(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
 		spyral.sprite.Sprite.__init__(self)
 		self.location = openSpace(foodItems,snake,head)
-		self.val = operators[random.randrange(0,4,1)]
+		used = False
+		for f in foodItems:
+			if f.val == "*" or f.val == "/":
+				used = True
+		if len(snake) > 0:
+			if snake[len(snake)-1].value == "/":
+				used = True
+		if used == False:
+			self.val = operators[random.randrange(0,4,1)]
+		else:
+			self.val = operators[random.randrange(0,2,1)]
 		self.image = fonts['operator'].render(self.val,True,colors['operator'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
@@ -107,7 +117,7 @@ class Number(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
 		spyral.sprite.Sprite.__init__(self)
 		self.location = openSpace(foodItems,snake,head)
-		self.val = random.randrange(0,15,1)
+		self.val = random.randrange(1,15,1)
 		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
@@ -140,6 +150,7 @@ class Snake(spyral.sprite.Sprite):
 		self.render()
 		self.lastType = 'Operator'
 	
+	#only call when the snake reaches the new location, which gets stored to oldLocation, where the sprites are drawn
 	def render(self):
 		#render the nodes
 		for n in self.nodes:
@@ -242,13 +253,13 @@ class Game(spyral.scene.Scene):
 
 				
 				#move the nodes			
-				if found == False:
-					if len(self.snake.nodes) > 1:
+				if found == False: #move all of the nodes except the one closest to the head, and only if there's not a new node 
+					if len(self.snake.nodes) > 1:#but only if there are nodes to move
 						for i in range(0,len(self.snake.nodes)-1):
 							self.snake.nodes[i].location = self.snake.nodes[i+1].location
 							self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
 
-				if len(self.snake.nodes) > 0:
+				if len(self.snake.nodes) > 0:#if there is a node next to the head, move it
 					self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
 					self.snake.nodes[len(self.snake.nodes)-1].direction = self.snake.direction
 				

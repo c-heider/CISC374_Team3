@@ -237,7 +237,7 @@ class Game(spyral.scene.Scene):
 		elif self.collapseNodes[1].value == "-":
 			return (self.collapseNodes[0].value-self.collapseNodes[2].value)
 		elif self.collapseNodes[1].value == "/":
-			return (self.collapseNodes[0].value/self.collapseNodes[2].value)
+			return float(self.collapseNodes[0].value/self.collapseNodes[2].value)
 		elif self.collapseNodes[1].value == "*":
 			return (self.collapseNodes[0].value*self.collapseNodes[2].value)
 			

@@ -43,15 +43,19 @@ def openSpace(foodItems,snake,head):
 			taken = True
 	return loc
 	
-def step(sprite):
+def step(sprite,inc,count):
 	if sprite.direction == directions['up']:
-		sprite.rect.center = (sprite.rect.center[0],sprite.rect.center[1]-int(STEP))
+		sprite.rect.center = (sprite.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,
+			sprite.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2 - int(inc*count))
 	elif sprite.direction == directions['down']:
-		sprite.rect.center = (sprite.rect.center[0],sprite.rect.center[1]+int(STEP))
+		sprite.rect.center = (sprite.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,
+			sprite.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2 + int(inc*count))
 	elif sprite.direction == directions['left']:
-		sprite.rect.center = (sprite.rect.center[0]-int(STEP),sprite.rect.center[1])
+		sprite.rect.center = (sprite.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2 - int(inc*count),
+			sprite.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 	else:
-		sprite.rect.center = (sprite.rect.center[0]+int(STEP),sprite.rect.center[1])
+		sprite.rect.center = (sprite.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2 + int(inc*count),
+			sprite.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 
 class Score(spyral.sprite.Sprite):
@@ -182,6 +186,8 @@ class Game(spyral.scene.Scene):
 		self.collapseNodes = []
 		self.newNode = None
 		self.count = 0
+		self.eating = False
+		self.eatIndex = 0
 		
 	def findNextOp(self):
 		for n in self.snake.nodes:
@@ -253,134 +259,151 @@ class Game(spyral.scene.Scene):
 		self.camera.draw()
 	
 	def update(self,tick):
-		self.count += 1
-		self.count %= TICKS_PER_MOVE		
-		
-		if self.count == 0 and self.collapsing == False:
-			if self.snake.location != self.snake.oldLocation:
+		if self.eating == False:
+			self.count += 1
+			self.count %= TICKS_PER_MOVE		
+			
+			if self.count == 0 and self.collapsing == False:
+				if self.snake.location != self.snake.oldLocation:
+					self.snake.render()
+			
+				self.snake.oldLocation = self.snake.location
+				for n in self.snake.nodes:
+					n.oldLocation = n.location
+				
+				#get keyboard input
+				newDirection = self.snake.direction
+				for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
+					if event.type == pygame.KEYDOWN:
+						if event.key == pygame.K_SPACE:
+							spyral.director.pop()
+						if event.key == pygame.K_c and len(self.snake.nodes) > 1 and len(self.snake.nodes)%2 == 1:
+							self.collapsing = True
+							return
+						if event.key == pygame.K_UP:
+							self.moving = True
+							newDirection = directions['up']
+						elif event.key == pygame.K_DOWN:
+							self.moving = True
+							newDirection = directions['down']
+						elif event.key == pygame.K_RIGHT:
+							self.moving = True
+							newDirection = directions['right']
+						elif event.key == pygame.K_LEFT:
+							self.moving = True
+							newDirection = directions['left']
+					elif event.type == pygame.KEYUP:
+						if event.key == pygame.K_UP and newDirection == directions['up']:
+							self.moving = False
+						elif event.key == pygame.K_DOWN and newDirection == directions['down']:
+							self.moving = False
+						elif event.key == pygame.K_RIGHT and newDirection == directions['right']:
+							self.moving = False
+						elif event.key == pygame.K_LEFT and newDirection == directions['left']:
+							self.moving = False
+				pygame.event.clear()
+				
+				
+				if self.moving == True:
+
+				
+					#get new location
+					if newDirection == directions['up']:
+						newloc = (self.snake.location[0],self.snake.location[1]-1)
+					elif newDirection == directions['down']:
+						newloc = (self.snake.location[0],self.snake.location[1]+1)
+					elif newDirection == directions['right']:
+						newloc = (self.snake.location[0]+1,self.snake.location[1])
+					elif newDirection == directions['left']:
+						newloc = (self.snake.location[0]-1,self.snake.location[1])
+							
+					#test if we've hit a wall or self		
+					
+					#test for target
+					found = False
+					for f in self.foodItems:
+						if f.location == newloc and type(f).__name__ != self.snake.lastType:
+							found = True
+							newNode = SnakeNode(f.val)
+							newNode.location = self.snake.location
+							newNode.oldLocation = newNode.location
+							self.snake.nodes.append(newNode)
+							self.group.add(newNode)
+							itemName = type(f).__name__
+							self.snake.lastType = itemName
+							self.foodItems.remove(f)
+							f.kill()
+							newNode.render()
+							break
+
+					
+					#move the nodes			
+					if found == False: #move all of the nodes except the one closest to the head, and only if there's not a new node 
+						if len(self.snake.nodes) > 1:#but only if there are nodes to move
+							for i in range(0,len(self.snake.nodes)-1):
+								self.snake.nodes[i].location = self.snake.nodes[i+1].location
+								self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
+
+					if len(self.snake.nodes) > 0:#if there is a node next to the head, move it
+						self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
+						self.snake.nodes[len(self.snake.nodes)-1].direction = self.snake.direction
+					
+					if found == True:
+						self.snake.nodes[len(self.snake.nodes)-1].oldLocation = self.snake.location
+
+					
+					#move the head
+					self.snake.location = newloc
+					self.snake.direction = newDirection
+					
+
+					
+					#get new FoodItem if necessary
+					if found:
+						if itemName == 'Operator':
+							newItem = Operator(self.foodItems,self.snake.nodes,self.snake.location)
+							self.foodItems.append(newItem)
+							self.group.add(newItem)
+						else:
+							newItem = Number(self.foodItems,self.snake.nodes,self.snake.location)
+							self.foodItems.append(newItem)
+							self.group.add(newItem)
+					
+					if found == True:
+						self.eating = True
+						return		
+
+				
+			if self.collapsing and self.count == 0:
 				self.snake.render()
-		
-			self.snake.oldLocation = self.snake.location
-			for n in self.snake.nodes:
-				n.oldLocation = n.location
-			
-			#get keyboard input
-			newDirection = self.snake.direction
-			for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
-				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_SPACE:
-						spyral.director.pop()
-					if event.key == pygame.K_c and len(self.snake.nodes) > 1 and len(self.snake.nodes)%2 == 1:
-						self.collapsing = True
-						return
-					if event.key == pygame.K_UP:
-						self.moving = True
-						newDirection = directions['up']
-					elif event.key == pygame.K_DOWN:
-						self.moving = True
-						newDirection = directions['down']
-					elif event.key == pygame.K_RIGHT:
-						self.moving = True
-						newDirection = directions['right']
-					elif event.key == pygame.K_LEFT:
-						self.moving = True
-						newDirection = directions['left']
-				elif event.type == pygame.KEYUP:
-					if event.key == pygame.K_UP and newDirection == directions['up']:
-						self.moving = False
-					elif event.key == pygame.K_DOWN and newDirection == directions['down']:
-						self.moving = False
-					elif event.key == pygame.K_RIGHT and newDirection == directions['right']:
-						self.moving = False
-					elif event.key == pygame.K_LEFT and newDirection == directions['left']:
-						self.moving = False
-			pygame.event.clear()
-			
-			
-			if self.moving == True:
+				self.snake.oldLocation = self.snake.location
+				for n in self.snake.nodes:
+					n.oldLocation = n.location
+				self.collapse()
 
+			if self.collapsing and self.collapseIndex == 0 and self.count == 0 and len(self.snake.nodes) == 1:
+				self.collapsing = False
 			
-				#get new location
-				if newDirection == directions['up']:
-					newloc = (self.snake.location[0],self.snake.location[1]-1)
-				elif newDirection == directions['down']:
-					newloc = (self.snake.location[0],self.snake.location[1]+1)
-				elif newDirection == directions['right']:
-					newloc = (self.snake.location[0]+1,self.snake.location[1])
-				elif newDirection == directions['left']:
-					newloc = (self.snake.location[0]-1,self.snake.location[1])
-						
-				#test if we've hit a wall or self		
+			#step each Sprite towards its new location
+			if self.count != 0:
+				if self.snake.location != self.snake.oldLocation:
+					step(self.snake,STEP,self.count)
+				for n in self.snake.nodes:
+					if n.location != n.oldLocation:
+						step(n,STEP,self.count)
 				
-				#test for target
-				found = False
-				for f in self.foodItems:
-					if f.location == newloc and type(f).__name__ != self.snake.lastType:
-						found = True
-						newNode = SnakeNode(f.val)
-						newNode.location = self.snake.location
-						newNode.oldLocation = newNode.location
-						self.snake.nodes.append(newNode)
-						self.group.add(newNode)
-						itemName = type(f).__name__
-						self.snake.lastType = itemName
-						self.foodItems.remove(f)
-						f.kill()
-						newNode.render()
-						break
-
 				
-				#move the nodes			
-				if found == False: #move all of the nodes except the one closest to the head, and only if there's not a new node 
-					if len(self.snake.nodes) > 1:#but only if there are nodes to move
-						for i in range(0,len(self.snake.nodes)-1):
-							self.snake.nodes[i].location = self.snake.nodes[i+1].location
-							self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
-
-				if len(self.snake.nodes) > 0:#if there is a node next to the head, move it
-					self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
-					self.snake.nodes[len(self.snake.nodes)-1].direction = self.snake.direction
-				
-				if found == True:
-					self.snake.nodes[len(self.snake.nodes)-1].oldLocation = self.snake.location
-				
-				#move the head
-				self.snake.location = newloc
-				self.snake.direction = newDirection
-				
-				#get new FoodItem if necessary
-				if found:
-					if itemName == 'Operator':
-						newItem = Operator(self.foodItems,self.snake.nodes,self.snake.location)
-						self.foodItems.append(newItem)
-						self.group.add(newItem)
-					else:
-						newItem = Number(self.foodItems,self.snake.nodes,self.snake.location)
-						self.foodItems.append(newItem)
-						self.group.add(newItem)
-						
-
+			self.group.update()
 			
-		if self.collapsing and self.count == 0:
-			self.snake.render()
-			self.snake.oldLocation = self.snake.location
-			for n in self.snake.nodes:
-				n.oldLocation = n.location
-			self.collapse()
-
-		if self.collapsing and self.collapseIndex == 0 and self.count == 0 and len(self.snake.nodes) == 1:
-			self.collapsing = False
-		
-		#step each Sprite towards its new location
-		if self.count != 0:
-			if self.snake.location != self.snake.oldLocation:
-				step(self.snake)
-			for n in self.snake.nodes:
-				if n.location != n.oldLocation:
-					step(n)
-			
-			
-		self.group.update()
+		elif self.eating:
+			self.eatIndex += 1
+			inc = float(BLOCK_SIZE/5)			
+			step(self.snake,inc,self.eatIndex)
+			if self.eatIndex == 4:
+				self.eatIndex = 0
+				self.eating = False
+				self.count = TICKS_PER_MOVE-1
+				return
 
 
 

@@ -220,6 +220,7 @@ class Game(spyral.scene.Scene):
 				self.snake.nodes.remove(n)
 			self.collapseIndex = 1
 			self.newNode = newNode
+			newNode.render()
 			return
 				
 		elif self.collapseIndex == 1:
@@ -318,12 +319,15 @@ class Game(spyral.scene.Scene):
 					if f.location == newloc and type(f).__name__ != self.snake.lastType:
 						found = True
 						newNode = SnakeNode(f.val)
+						newNode.location = self.snake.location
+						newNode.oldLocation = newNode.location
 						self.snake.nodes.append(newNode)
 						self.group.add(newNode)
 						itemName = type(f).__name__
 						self.snake.lastType = itemName
 						self.foodItems.remove(f)
 						f.kill()
+						newNode.render()
 						break
 
 				

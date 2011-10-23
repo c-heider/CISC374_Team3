@@ -161,6 +161,7 @@ class Snake(spyral.sprite.Sprite):
 		for n in self.nodes:
 			n.render()
 		#render the head
+		self.image = images['head0' + directionChars[self.direction]]
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 class Game(spyral.scene.Scene):
@@ -257,7 +258,6 @@ class Game(spyral.scene.Scene):
 			self.collapseIndex = 0
 	
 	def render(self):
-		self.snake.image = images['head0' + directionChars[self.snake.direction]]
 		self.group.draw()
 		self.camera.draw()
 	
@@ -285,16 +285,32 @@ class Game(spyral.scene.Scene):
 							return
 						if event.key == pygame.K_UP and (self.snake.direction != directions['down'] or len(self.snake.nodes) == 0):
 							self.moving = True
+							oldDirection = self.snake.direction
 							newDirection = directions['up']
+							self.snake.direction = newDirection
+							self.snake.render()
+							self.snake.direction = oldDirection
 						elif event.key == pygame.K_DOWN and (self.snake.direction != directions['up'] or len(self.snake.nodes) == 0):
 							self.moving = True
+							oldDirection = self.snake.direction
 							newDirection = directions['down']
+							self.snake.direction = newDirection
+							self.snake.render()
+							self.snake.direction = oldDirection
 						elif event.key == pygame.K_RIGHT and (self.snake.direction != directions['left'] or len(self.snake.nodes) == 0):
 							self.moving = True
+							oldDirection = self.snake.direction
 							newDirection = directions['right']
+							self.snake.direction = newDirection
+							self.snake.render()
+							self.snake.direction = oldDirection
 						elif event.key == pygame.K_LEFT and (self.snake.direction != directions['right'] or len(self.snake.nodes) == 0):
 							self.moving = True
+							oldDirection = self.snake.direction
 							newDirection = directions['left']
+							self.snake.direction = newDirection
+							self.snake.render()
+							self.snake.direction = oldDirection
 					elif event.type == pygame.KEYUP:
 						if event.key == pygame.K_UP and newDirection == directions['up']:
 							self.moving = False
@@ -325,7 +341,7 @@ class Game(spyral.scene.Scene):
 					if newloc[0] < 0 or newloc[0] > 24 or newloc[1] < 0 or newloc[1] > 17:
 						if len(self.snake.nodes) > 0:
 							self.clearing = True
-							self.moving = False
+						self.moving = False
 						return
 						
 					for i in range(1,len(self.snake.nodes)):
@@ -345,11 +361,19 @@ class Game(spyral.scene.Scene):
 							newNode.oldLocation = newNode.location
 							self.snake.nodes.append(newNode)
 							self.group.add(newNode)
+							
+							#so that the head is always drawn first
+							self.snake.kill()
+							self.group.add(self.snake)
+							
 							itemName = type(f).__name__
 							self.snake.lastType = itemName
 							self.foodItems.remove(f)
 							f.kill()
+							
+							#self.snake.render()
 							newNode.render()
+							
 							break
 
 					

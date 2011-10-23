@@ -107,7 +107,7 @@ class Operator(spyral.sprite.Sprite):
 			if snake[len(snake)-1].value == "/":
 				used = True
 		if used == False:
-			self.val = operators[random.randrange(0,4,1)]
+			self.val = operators[random.randrange(0,3,1)]
 		else:
 			self.val = operators[random.randrange(0,2,1)]
 		self.image = fonts['operator'].render(self.val,True,colors['operator'])
@@ -132,48 +132,7 @@ class SnakeNode(spyral.sprite.Sprite):
 	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
-		self.rect.center = self.offset()
-
-	#for the "wiggle" can be much shorter but I dont have time to figure it out
-	def offset(self):
-		pos = (0,0)
-		if self.location[0]%4 == 0:
-			if self.location[1]%4 == 0:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
-			elif self.location[1]%4 == 1:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
-			elif self.location[1]%4 == 2:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
-			elif self.location[1]%4 == 3:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/4)
-		elif self.location[0]%4 == 1:
-			if self.location[1]%4 == 0:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-			elif self.location[1]%4 == 1:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-			elif self.location[1]%4 == 2:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-			elif self.location[1]%4 == 3:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-		elif self.location[0]%4 == 2:
-			if self.location[1]%4 == 0:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
-			elif self.location[1]%4 == 1:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
-			elif self.location[1]%4 == 2:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
-			elif self.location[1]%4 == 3:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + 3*BLOCK_SIZE/4)
-		elif self.location[0]%4 == 3:
-			if self.location[1]%4 == 0:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-			elif self.location[1]%4 == 1:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-			elif self.location[1]%4 == 2:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + 3*BLOCK_SIZE/4,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-			elif self.location[1]%4 == 3:
-				pos = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
-		return pos
+		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 
 		
@@ -221,6 +180,7 @@ class Game(spyral.scene.Scene):
 		self.collapsing = False
 		self.collapseIndex = 0
 		self.collapseNodes = []
+		self.newNode = None
 		self.count = 0
 		
 	def findNextOp(self):
@@ -258,13 +218,35 @@ class Game(spyral.scene.Scene):
 			self.snake.nodes.insert(opIndex,newNode)
 			for n in self.collapseNodes:
 				self.snake.nodes.remove(n)
+			self.collapseIndex = 1
+			self.newNode = newNode
+			return
 				
-		self.collapseIndex = 0
-		self.collapsing = False
-		for n in self.collapseNodes[:]:
-			self.collapseNodes.remove(n)
-			
-					
+		elif self.collapseIndex == 1:
+			newIndex = self.snake.nodes.index(self.newNode)
+			self.snake.nodes[newIndex].location = self.collapseNodes[2].location
+			self.snake.nodes[newIndex].direction = self.collapseNodes[2].direction
+			for i in range(0,newIndex-1):
+				self.snake.nodes[i].location = self.snake.nodes[i+1].location
+				self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
+			if newIndex > 0:
+				self.snake.nodes[newIndex-1].location = self.collapseNodes[0].location
+				self.snake.nodes[newIndex-1].direction = self.collapseNodes[0].direction
+			self.collapseIndex = 2
+			return
+	
+		else:
+			newIndex = self.snake.nodes.index(self.newNode)
+			for i in range(0,newIndex-1):
+				self.snake.nodes[i].location = self.snake.nodes[i+1].location
+				self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
+			if newIndex > 0:
+				self.snake.nodes[newIndex-1].location = self.collapseNodes[1].location
+				self.snake.nodes[newIndex-1].direction = self.collapseNodes[1].direction
+			self.collapsing = False
+			for n in self.collapseNodes[:]:
+				self.collapseNodes.remove(n)
+			self.collapseIndex = 0
 	
 	def render(self):
 		self.group.draw()
@@ -285,7 +267,7 @@ class Game(spyral.scene.Scene):
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
 						spyral.director.pop()
-					if event.key == pygame.K_c:
+					if event.key == pygame.K_c and len(self.snake.nodes) > 1 and len(self.snake.nodes)%2 == 1:
 						self.collapsing = True
 						return
 					if event.key == pygame.K_UP:

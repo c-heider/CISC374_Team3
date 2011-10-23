@@ -316,8 +316,11 @@ class Game(spyral.scene.Scene):
 						newloc = (self.snake.location[0]+1,self.snake.location[1])
 					elif newDirection == directions['left']:
 						newloc = (self.snake.location[0]-1,self.snake.location[1])
-							
+					
+					
 					#test if we've hit a wall or self		
+					
+					
 					
 					#test for target
 					found = False
@@ -369,11 +372,12 @@ class Game(spyral.scene.Scene):
 							self.foodItems.append(newItem)
 							self.group.add(newItem)
 					
+					#start eating animation
 					if found == True:
 						self.eating = True
 						return		
 
-				
+			#if we're in a collapse, collapse the next operator
 			if self.collapsing and self.count == 0:
 				self.snake.render()
 				self.snake.oldLocation = self.snake.location
@@ -381,11 +385,12 @@ class Game(spyral.scene.Scene):
 					n.oldLocation = n.location
 				self.collapse()
 
+			#break out of the collapse when it's finished
 			if self.collapsing and self.collapseIndex == 0 and self.count == 0 and len(self.snake.nodes) == 1:
 				self.collapsing = False
 			
 			#step each Sprite towards its new location
-			if self.count != 0:
+			if self.count != 0 and self.eating == False:
 				if self.snake.location != self.snake.oldLocation:
 					step(self.snake,STEP,self.count)
 				for n in self.snake.nodes:
@@ -395,6 +400,7 @@ class Game(spyral.scene.Scene):
 				
 			self.group.update()
 			
+		#eating animation
 		elif self.eating:
 			self.eatIndex += 1
 			inc = float(BLOCK_SIZE/5)			

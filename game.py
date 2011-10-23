@@ -12,6 +12,7 @@ BLOCK_SIZE = 32
 STEP = float(BLOCK_SIZE/TICKS_PER_MOVE)
 
 operators = ["+","-","*","/"]
+directionChars = ['N','S','E','W']
 directions = {}
 directions['up'] = 0
 directions['down'] = 1
@@ -143,15 +144,15 @@ class SnakeNode(spyral.sprite.Sprite):
 class Snake(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
-		self.image = images['head']
 		self.location = (11,8)
 		self.oldLocation = self.location
 		self.nodes = []
 		self.clearing = False
 		self.collapsing = False
 		self.length = 0
-		self.direction = directions['up']
+		self.direction = directions['right']
 		self.render()
+		self.image = images['head' + str(0) + directionChars[self.direction]]
 		self.lastType = 'Operator'
 	
 	#only call when the snake reaches the new location, which gets stored to oldLocation, where the sprites are drawn
@@ -255,6 +256,7 @@ class Game(spyral.scene.Scene):
 			self.collapseIndex = 0
 	
 	def render(self):
+		self.snake.image = images['head0' + directionChars[self.snake.direction]]
 		self.group.draw()
 		self.camera.draw()
 	
@@ -422,10 +424,16 @@ if __name__ == "__main__":
 	colors['node'] = (255,255,255)
 	colors['number'] = (255,255,255)
 	colors['operator'] = (255,255,255)
-	
-	
-	images['head'] = spyral.util.new_surface(BLOCK_SIZE,BLOCK_SIZE)
-	images['head'].fill(colors['head'])
+
+	for direction in range(4):
+		for frame in range(6):
+			imageString= 'head' + str(frame) + directionChars[direction]
+			print imageString
+			url = "Images/Adder/Adder_Head_" + str(directionChars[direction]) + str(frame)+ ".png"
+			images[imageString] = pygame.image.load(url)
+			
+	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
+	#images['head'].fill(colors['head'])
 	
 	fonts['node'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)

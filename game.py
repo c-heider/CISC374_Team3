@@ -125,14 +125,14 @@ class SnakeNode(spyral.sprite.Sprite):
 	def __init__(self,val):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
-		self.location = (0,0)
-		self.oldLocation = (0,0)
+		self.location = (-10,-10)
+		self.oldLocation = (-10,-10)
 		self.render()
 	
 	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
 		self.image = fonts['node'].render(str(self.value),True,colors['node'])
-		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 
 		
@@ -156,7 +156,7 @@ class Snake(spyral.sprite.Sprite):
 		for n in self.nodes:
 			n.render()
 		#render the head
-		self.rect.center = (self.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 class Game(spyral.scene.Scene):
 	def __init__(self):
@@ -257,6 +257,9 @@ class Game(spyral.scene.Scene):
 		self.count %= TICKS_PER_MOVE		
 		
 		if self.count == 0 and self.collapsing == False:
+			if self.snake.location != self.snake.oldLocation:
+				self.snake.render()
+		
 			self.snake.oldLocation = self.snake.location
 			for n in self.snake.nodes:
 				n.oldLocation = n.location
@@ -353,15 +356,15 @@ class Game(spyral.scene.Scene):
 						self.foodItems.append(newItem)
 						self.group.add(newItem)
 						
-			
-			self.snake.render()
+
 			
 		if self.collapsing and self.count == 0:
+			self.snake.render()
 			self.snake.oldLocation = self.snake.location
 			for n in self.snake.nodes:
 				n.oldLocation = n.location
 			self.collapse()
-			self.snake.render()
+
 		
 		#step each Sprite towards its new location
 		if self.count != 0:

@@ -188,6 +188,7 @@ class Game(spyral.scene.Scene):
 		self.count = 0
 		self.eating = False
 		self.eatIndex = 0
+		self.clearing = False
 		
 	def findNextOp(self):
 		for n in self.snake.nodes:
@@ -259,7 +260,7 @@ class Game(spyral.scene.Scene):
 		self.camera.draw()
 	
 	def update(self,tick):
-		if self.eating == False:
+		if self.eating == False and self.clearing == False:
 			self.count += 1
 			self.count %= TICKS_PER_MOVE		
 			
@@ -280,16 +281,16 @@ class Game(spyral.scene.Scene):
 						if event.key == pygame.K_c and len(self.snake.nodes) > 1 and len(self.snake.nodes)%2 == 1:
 							self.collapsing = True
 							return
-						if event.key == pygame.K_UP:
+						if event.key == pygame.K_UP and (self.snake.direction != directions['down'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							newDirection = directions['up']
-						elif event.key == pygame.K_DOWN:
+						elif event.key == pygame.K_DOWN and (self.snake.direction != directions['up'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							newDirection = directions['down']
-						elif event.key == pygame.K_RIGHT:
+						elif event.key == pygame.K_RIGHT and (self.snake.direction != directions['left'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							newDirection = directions['right']
-						elif event.key == pygame.K_LEFT:
+						elif event.key == pygame.K_LEFT and (self.snake.direction != directions['right'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							newDirection = directions['left']
 					elif event.type == pygame.KEYUP:
@@ -319,7 +320,17 @@ class Game(spyral.scene.Scene):
 					
 					
 					#test if we've hit a wall or self		
-					
+					if newloc[0] < 0 or newloc[0] > 24 or newloc[1] < 0 or newloc[1] > 17:
+						if len(self.snake.nodes) > 0:
+							self.clearing = True
+							self.moving = False
+						return
+						
+					for i in range(1,len(self.snake.nodes)):
+						if newloc == self.snake.nodes[i].location:
+							self.clearing = True
+							self.moving = False
+							return
 					
 					
 					#test for target
@@ -410,6 +421,20 @@ class Game(spyral.scene.Scene):
 				self.eating = False
 				self.count = TICKS_PER_MOVE-1
 				return
+		
+		elif self.clearing:
+			self.count += 1
+			self.count %= TICKS_PER_MOVE
+			if self.count == 0:
+				n = self.snake.nodes[0]
+				n.kill()
+				self.snake.nodes.remove(n)
+			if len(self.snake.nodes) == 0:
+				self.clearing = False
+				self.snake.lastType = 'Operator'
+			return
+			
+				
 
 
 

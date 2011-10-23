@@ -244,7 +244,6 @@ class Game(spyral.scene.Scene):
 			if newIndex > 0:
 				self.snake.nodes[newIndex-1].location = self.collapseNodes[1].location
 				self.snake.nodes[newIndex-1].direction = self.collapseNodes[1].direction
-			self.collapsing = False
 			for n in self.collapseNodes[:]:
 				self.collapseNodes.remove(n)
 			self.collapseIndex = 0
@@ -369,6 +368,8 @@ class Game(spyral.scene.Scene):
 				n.oldLocation = n.location
 			self.collapse()
 
+		if self.collapsing and self.collapseIndex == 0 and self.count == 0 and len(self.snake.nodes) == 1:
+			self.collapsing = False
 		
 		#step each Sprite towards its new location
 		if self.count != 0:

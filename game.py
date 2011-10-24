@@ -471,6 +471,7 @@ class Game(spyral.scene.Scene):
 		elif self.clearing:
 			self.count += 1
 			self.count %= TICKS_PER_MOVE
+			self.snake.image = images['head' + str(6) + directionChars[self.snake.direction]]
 			if self.count == 0:
 				n = self.snake.nodes[0]
 				n.kill()
@@ -495,7 +496,7 @@ if __name__ == "__main__":
 	colors['operator'] = (255,255,255)
 
 	for direction in range(4):
-		for frame in range(6):
+		for frame in range(7):
 			imageString= 'head' + str(frame) + directionChars[direction]
 			print imageString
 			url = "Images/Adder/Adder_Head_" + str(directionChars[direction]) + str(frame)+ ".png"

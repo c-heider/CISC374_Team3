@@ -287,7 +287,7 @@ class Game(spyral.scene.Scene):
 				newDirection = self.snake.direction
 				for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 					if event.type == pygame.KEYDOWN:
-						if event.key == pygame.K_SPACE:
+						if event.key == pygame.K_q:
 							spyral.director.pop()
 						if event.key == pygame.K_c and len(self.snake.nodes) > 1 and len(self.snake.nodes)%2 == 1:
 							self.collapsing = True
@@ -449,9 +449,7 @@ class Game(spyral.scene.Scene):
 					step(self.snake,STEP,self.count)
 				for n in self.snake.nodes:
 					if n.location != n.oldLocation:
-						step(n,STEP,self.count)
-				
-				
+						step(n,STEP,self.count)	
 			self.group.update()
 			
 		#eating animation

@@ -151,9 +151,11 @@ class Snake(spyral.sprite.Sprite):
 		self.collapsing = False
 		self.length = 0
 		self.direction = directions['right']
-		self.render()
 		self.image = images['head' + str(0) + directionChars[self.direction]]
 		self.lastType = 'Operator'
+		self.eaten = False
+		self.eaten2 = False
+		self.render()
 	
 	#only call when the snake reaches the new location, which gets stored to oldLocation, where the sprites are drawn
 	def render(self):
@@ -161,7 +163,14 @@ class Snake(spyral.sprite.Sprite):
 		for n in self.nodes:
 			n.render()
 		#render the head
-		self.image = images['head0' + directionChars[self.direction]]
+		if self.eaten or self.eaten2:
+			self.image = images['head5' + directionChars[self.direction]]
+			if self.eaten:
+				self.eaten = False
+			else:
+				self.eaten2 = False
+		else:
+			self.image = images['head0' + directionChars[self.direction]]
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 class Game(spyral.scene.Scene):
@@ -288,28 +297,36 @@ class Game(spyral.scene.Scene):
 							oldDirection = self.snake.direction
 							newDirection = directions['up']
 							self.snake.direction = newDirection
+							eaten = self.snake.eaten
 							self.snake.render()
+							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
 						elif event.key == pygame.K_DOWN and (self.snake.direction != directions['up'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							oldDirection = self.snake.direction
 							newDirection = directions['down']
 							self.snake.direction = newDirection
+							eaten = self.snake.eaten
 							self.snake.render()
+							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
 						elif event.key == pygame.K_RIGHT and (self.snake.direction != directions['left'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							oldDirection = self.snake.direction
 							newDirection = directions['right']
 							self.snake.direction = newDirection
+							eaten = self.snake.eaten
 							self.snake.render()
+							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
 						elif event.key == pygame.K_LEFT and (self.snake.direction != directions['right'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							oldDirection = self.snake.direction
 							newDirection = directions['left']
 							self.snake.direction = newDirection
+							eaten = self.snake.eaten
 							self.snake.render()
+							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
 					elif event.type == pygame.KEYUP:
 						if event.key == pygame.K_UP and newDirection == directions['up']:
@@ -442,10 +459,13 @@ class Game(spyral.scene.Scene):
 			self.eatIndex += 1
 			inc = float(BLOCK_SIZE/5)			
 			step(self.snake,inc,self.eatIndex)
+			self.snake.image = images['head' + str(self.eatIndex) + directionChars[self.snake.direction]]
 			if self.eatIndex == 4:
 				self.eatIndex = 0
 				self.eating = False
 				self.count = TICKS_PER_MOVE-1
+				self.snake.eaten = True
+				self.snake.eaten2 = True #render "eaten" image twice
 				return
 		
 		elif self.clearing:

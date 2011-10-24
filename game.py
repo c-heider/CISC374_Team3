@@ -135,13 +135,16 @@ class SnakeNode(spyral.sprite.Sprite):
 	def __init__(self,val):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
+		self.direction = directions['right']
+		self.image = images['body'+ directionChars[self.direction]] 
 		self.location = (-10,-10)
 		self.oldLocation = (-10,-10)
 		self.render()
 	
 	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
-		self.image = fonts['node'].render(str(self.value),True,colors['node'])
+		self.image = images['body' + directionChars[self.direction]]
+		#self.image = fonts['node'].render(str(self.value),True,colors['node'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 
@@ -523,10 +526,13 @@ if __name__ == "__main__":
 	colors['expression'] = (255,0,0)
 
 	for direction in range(4):
+		bodyImageString = 'body' + directionChars[direction]
+		url = "Images/Adder/Adder_Body_" + str(directionChars[direction]) + ".png"
+		images[bodyImageString] = pygame.image.load(url)
 		for frame in range(7):
-			imageString= 'head' + str(frame) + directionChars[direction]
+			headImageString= 'head' + str(frame) + directionChars[direction]
 			url = "Images/Adder/Adder_Head_" + str(directionChars[direction]) + str(frame)+ ".png"
-			images[imageString] = pygame.image.load(url)
+			images[headImageString] = pygame.image.load(url)
 			
 	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])

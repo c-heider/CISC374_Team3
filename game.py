@@ -2,6 +2,7 @@ import pygame
 import spyral
 import random
 import math
+from os import path
 
 MOVES_PER_SECOND = 5
 TICKS_PER_SECOND = 15
@@ -693,8 +694,9 @@ class Game(spyral.scene.Scene):
 
 if __name__ == "__main__":
 	spyral.init()
-	
-	colors['background'] = (0, 0, 0)
+	spyral.director.init((WIDTH,HEIGHT), ticks_per_second=TICKS_PER_SECOND)
+
+	colors['background'] = (0, 152, 254)
 	colors['head'] = (255,255,255)
 	colors['node'] = (255,255,255)
 	colors['bodynode'] = (0,0,0)
@@ -702,7 +704,17 @@ if __name__ == "__main__":
 	colors['operator'] = (255,255,255)
 	colors['length'] = (0,0,255)
 	colors['expression'] = (255,0,0)
-	
+	colors['character_name'] = (0,0,0)
+
+
+	strings['characters'] = ["Adder Adam", "Boa Benny", "Cobra Carl",
+                             "Python Perry", "Rattler Rebecca", "Sam Salamander"]
+
+	images['background'] = spyral.util.load_image(path.join('Images/Adder', 'background.png'))
+	images['menu'] = spyral.util.load_image(path.join('Images/Adder', 'menu.png'))
+	images['character_select'] = spyral.util.load_image(path.join('Images/Adder', 'character_select.png'))
+
+
 	size = 60
 	for direction in range(4):
 		bodyImageString = 'body' + directionChars[direction]
@@ -731,10 +743,30 @@ if __name__ == "__main__":
 	geom['text_height'] = 0
 	geom['text_height_bottom'] = HEIGHT - BLOCK_SIZE
 	
+	# Geometry for the Menu scene
+	geom['menu_start'] = pygame.Rect(300, 240, 200, 48)
+	geom['menu_character'] = pygame.Rect(300, 325, 200, 70)
+	geom['menu_unlock'] = pygame.Rect(24, 518, 210, 54)
+	geom['menu_quit'] = pygame.Rect(684, 542, 85, 28)
 	
-	spyral.director.init((WIDTH,HEIGHT))
+	 # Geometry for the Character Select scene
+	geom['character_prev'] = pygame.Rect(240, 170, 34, 56)
+	geom['character_next'] = pygame.Rect(525, 170, 34, 56)
+	geom['character_colors'] = [pygame.Rect(230, 392, 46, 46),
+                               pygame.Rect(284, 392, 46, 46),
+                               pygame.Rect(338, 392, 46, 46),
+                               pygame.Rect(392, 392, 46, 46),
+                               pygame.Rect(446, 392, 46, 46),
+                               pygame.Rect(500, 392, 46, 46)]
+	geom['character_back'] = pygame.Rect(680, 538, 70, 24)
+	geom['character_center'] = (342, 200)
+	geom['character_name_center'] = (400, 280)
+	
+#	spyral.director.init((WIDTH,HEIGHT))
 	spyral.director.push(Game())
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)
+	pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
+	spyral.director.push(Menu())
 	spyral.director.run()

@@ -1,0 +1,236 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spyral.gui &mdash; spyral v0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pelican.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="spyral v0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+  
+  
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for spyral.gui</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">pygame</span>
+<span class="kn">import</span> <span class="nn">spyral</span>
+
+<div class="viewcode-block" id="MouseSprite"><a class="viewcode-back" href="../../gui.html#spyral.gui.MouseSprite">[docs]</a><span class="k">class</span> <span class="nc">MouseSprite</span><span class="p">(</span><span class="n">spyral</span><span class="o">.</span><span class="n">sprite</span><span class="o">.</span><span class="n">Sprite</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Sprite class to handle mouse hovering and clicks. It conforms to layers</span>
+<span class="sd">    for event prioritizing. The following attributes may be useful:</span>
+<span class="sd">    </span>
+<span class="sd">    | *click_rect = None* represents a rectangle for clickable area. If None,</span>
+<span class="sd">      the sprite&#39;s *rect* is used.</span>
+<span class="sd">    | *hover_rect = None* represents a rectangle for hoverable area. If None,</span>
+<span class="sd">      the sprite&#39;s *rect* is used.</span>
+<span class="sd">    | *consume_clicks = True* is whether a click on this sprite should be</span>
+<span class="sd">      consumed, or allowed to pass on to other Sprites on this update.</span>
+<span class="sd">    | *consume_hover = False* is whether this sprite blocks lower sprites from</span>
+<span class="sd">      being hovered over. Only consumes per group, not globally.</span>
+<span class="sd">    | *enable_right = False* is whether right clicks should trigger a click</span>
+<span class="sd">      event</span>
+<span class="sd">    | *enable_middle = False* is whether middle clicks should trigger a click</span>
+<span class="sd">      event</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">spyral</span><span class="o">.</span><span class="n">sprite</span><span class="o">.</span><span class="n">Sprite</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">click_rect</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hover_rect</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consume_clicks</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consume_hover</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enable_right</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enable_middle</span> <span class="o">=</span> <span class="bp">False</span>
+        
+<div class="viewcode-block" id="MouseSprite.on_click"><a class="viewcode-back" href="../../gui.html#spyral.gui.MouseSprite.on_click">[docs]</a>    <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when this sprite is clicked. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+        </div>
+<div class="viewcode-block" id="MouseSprite.on_right_click"><a class="viewcode-back" href="../../gui.html#spyral.gui.MouseSprite.on_right_click">[docs]</a>    <span class="k">def</span> <span class="nf">on_right_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when this sprite is right clicked, if enabled. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+        </div>
+<div class="viewcode-block" id="MouseSprite.on_middle_click"><a class="viewcode-back" href="../../gui.html#spyral.gui.MouseSprite.on_middle_click">[docs]</a>    <span class="k">def</span> <span class="nf">on_middle_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when this sprite is middle clicked, if enabled. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+        </div>
+<div class="viewcode-block" id="MouseSprite.on_mouse_over"><a class="viewcode-back" href="../../gui.html#spyral.gui.MouseSprite.on_mouse_over">[docs]</a>    <span class="k">def</span> <span class="nf">on_mouse_over</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when the mouse begins hovering over this sprite. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+        </div>
+<div class="viewcode-block" id="MouseSprite.on_mouse_off"><a class="viewcode-back" href="../../gui.html#spyral.gui.MouseSprite.on_mouse_off">[docs]</a>    <span class="k">def</span> <span class="nf">on_mouse_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when the mouse stops hovering over this sprite. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+    </div>
+    <span class="k">def</span> <span class="nf">_handle_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_right</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_middle</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">click_rect</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">click_rect</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_right_click</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_middle_click</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">consume_clicks</span>
+        
+    <span class="k">def</span> <span class="nf">_hover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hover_rect</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hover_rect</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">consume_hover</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DragSprite"><a class="viewcode-back" href="../../gui.html#spyral.gui.DragSprite">[docs]</a><span class="k">class</span> <span class="nc">DragSprite</span><span class="p">(</span><span class="n">MouseSprite</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Sprite which derives from MouseSprite, and supports all of its features,</span>
+<span class="sd">    but allows for dragging and dropping the sprite.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">MouseSprite</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_real_layer</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drag_offset</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_real_layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="s">&#39;_DragTop&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_real_layer</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="p">:</span>
+            <span class="n">local</span> <span class="o">=</span> <span class="n">camera</span><span class="o">.</span><span class="n">world_to_local</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">local</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">spyral</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                             <span class="n">camera</span><span class="o">.</span><span class="n">world_to_local</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">()),</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">drag_offset</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="GUIGroup"><a class="viewcode-back" href="../../gui.html#spyral.gui.GUIGroup">[docs]</a><span class="k">class</span> <span class="nc">GUIGroup</span><span class="p">(</span><span class="n">spyral</span><span class="o">.</span><span class="n">sprite</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A group class which automatically handles the behavior of GUI sprites.</span>
+<span class="sd">    The behavior is otherwise the same in every way.s</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">spyral</span><span class="o">.</span><span class="n">sprite</span><span class="o">.</span><span class="n">Group</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mouse_previously_over</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">spyral</span><span class="o">.</span><span class="n">sprite</span><span class="o">.</span><span class="n">Group</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">layers</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">sort_sprites_cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="c"># Sorts sprites by layer from top down</span>
+            <span class="c"># Consider ways to optimize this at some point</span>
+            <span class="c"># Especially if it becomes a slowdown</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">layer</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">layer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;_&#39;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="mi">100</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">layer</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sprites</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">sort_sprites_cmp</span><span class="p">)</span>
+
+        <span class="c"># Let&#39;s handle mouse clicks first</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONUP</span><span class="p">]):</span>
+            <span class="c"># We should fix the event to camera coordinates.</span>
+            <span class="n">new_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">world_to_local</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_pos</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                       <span class="p">{</span><span class="s">&#39;pos&#39;</span><span class="p">:</span> <span class="n">new_pos</span><span class="p">,</span>
+                                        <span class="s">&#39;button&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">})</span>
+            <span class="n">used</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">sprite</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sprites</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="n">MouseSprite</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">sprite</span><span class="o">.</span><span class="n">_handle_click</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+                    <span class="n">used</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">used</span><span class="p">:</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="c"># Now let&#39;s handle mouseover.</span>
+        <span class="n">mouse_pos</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mouse_pos</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">mouse_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">world_to_local</span><span class="p">(</span><span class="n">mouse_pos</span><span class="p">)</span>
+        <span class="n">mouse_now_over</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">mouse_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sprite</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sprites</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="n">MouseSprite</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">hover</span> <span class="o">=</span> <span class="n">sprite</span><span class="o">.</span><span class="n">_hover</span><span class="p">(</span><span class="n">mouse_pos</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">hover</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+                    <span class="n">mouse_now_over</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sprite</span><span class="p">)</span>
+                    <span class="c"># first, is this one that the mouse was previously over</span>
+                    <span class="k">if</span> <span class="n">sprite</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mouse_previously_over</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">hover</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>  <span class="c"># It wants to consume the hover</span>
+                            <span class="k">break</span>
+                        <span class="k">continue</span>
+                    <span class="n">sprite</span><span class="o">.</span><span class="n">on_mouse_over</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">hover</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+                        <span class="k">break</span>
+        
+        <span class="k">for</span> <span class="n">sprite</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mouse_previously_over</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sprite</span> <span class="ow">in</span> <span class="n">mouse_now_over</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">sprite</span><span class="o">.</span><span class="n">on_mouse_off</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mouse_previously_over</span> <span class="o">=</span> <span class="n">mouse_now_over</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+
+  
+
+  </body>
+</html>

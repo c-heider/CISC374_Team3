@@ -1,0 +1,140 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Spyral &mdash; spyral v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pelican.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="spyral v0.1 documentation" href="#" />
+    <link rel="next" title="The Director and Scenes" href="scene.html" /> 
+  </head>
+  <body>
+  
+  
+  <div class=indexwrapper>
+  
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spyral">
+<h1>Spyral<a class="headerlink" href="#spyral" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="what-is-spyral">
+<h2>What is spyral?<a class="headerlink" href="#what-is-spyral" title="Permalink to this headline">¶</a></h2>
+<p>spyral is a 2D game engine/framework built on top of pygame. Its purpose is to
+support rapid prototyping and development of efficient games. It started as a
+project to allow easy optimization of games for the <a class="reference external" href="http://laptop.org">OLPC XO</a>, and has evolved
+into a semi-complete but still evolving framework for developing games.</p>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>To get spyral, you can clone the git repository, or download packages, from the
+<a class="reference external" href="https://github.com/rdeaton/spyral">github site</a>. For now, you can simply include the spyral directory in your
+project. A setup.py will be included at a later date. For a barebones example,
+see spyral/examples/skel.py, which provides a skeleton example of a program,
+complete with comments.</p>
+</div>
+<div class="section" id="the-core-api">
+<h2>The Core API<a class="headerlink" href="#the-core-api" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scene.html">The Director and Scenes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sprite.html">Sprites and Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera.html">Cameras</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="convenience-api">
+<h2>Convenience API<a class="headerlink" href="#convenience-api" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="util.html">Utility and Helper Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point.html">Point and tuple helper functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">GUI related Sprites and Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memoize.html">Memoization classes</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="i-m-stuck-i-need-help">
+<h3>I&#8217;m stuck! I need help!<a class="headerlink" href="#i-m-stuck-i-need-help" title="Permalink to this headline">¶</a></h3>
+<p>E-mail me at <a class="reference external" href="mailto:rdeaton&#37;&#52;&#48;udel&#46;edu">rdeaton<span>&#64;</span>udel<span>&#46;</span>edu</a>. For generic pygame help, or even asking me questions about spyral, you can also use IRC and visit #pygame at irc.freenode.net. You can find me there under the handle masquerade.</p>
+</div>
+<div class="section" id="why-are-the-render-and-update-loops-separate">
+<h3>Why are the render and update loops separate?<a class="headerlink" href="#why-are-the-render-and-update-loops-separate" title="Permalink to this headline">¶</a></h3>
+<p>Often example pygame code you will see uses one main loop for the whole program.
+In spyral, the two loops are separate because it provides for a more consistent
+experience across platforms. Often, a game with one main loop is written to run
+at whatever the framerate is capped at. If the machine it is running on can no
+longer handle this, the game mechanics slow down, making a less than pleasurable
+experience and an unfair advantage in some situations.</p>
+<p>If we instead separate the render loop, which is known to be slow, and the
+update loop, we can make sure that all game mechanics and input handling happens
+at the same rate even if the framerate drops.</p>
+</div>
+<div class="section" id="how-are-sprites-and-groups-in-spyral-different">
+<h3>How are Sprites and Groups in spyral different?<a class="headerlink" href="#how-are-sprites-and-groups-in-spyral-different" title="Permalink to this headline">¶</a></h3>
+<p>In spyral, the built in sprites have functionality which is akin to that you
+would find in the LayeredDirty group in pygame, without the programmer logic
+being necessary. This means that sprites automatically detect when they are
+dirty, and rerender themselves accordingly, so you can use the base Spyral
+Sprite and Group classes and see a speed boost automatically. Sprites mark
+themselves as dirty if you change any of the following attributes: <em>pos</em>,
+<em>position</em>, <em>image</em>, <em>rect</em>, <em>blend_flags</em>, <em>layer</em>.</p>
+<p>spyrals sprites and groups support layers similar to the LayeredDirty group,
+but they use named layers, specified in the camera. This makes it easier to
+manage and remember the layers sprites are on.</p>
+<p>spyral sprites also support subpixel positioning using the <em>pos</em> or <em>position</em>
+attributes (which are the same) and specifying surface blend flags for pygame
+via the <em>blend_flags</em> attribute.</p>
+<p>spyral groups are given a camera to draw to, whereas LayeredDirty is
+traditionally given a surface. spyral&#8217;s cameras all automatically scale and
+translate all drawing to the display so that drawing is done only once, whereas
+LayeredDirty may in some situations require you to draw to auxiliary surfaces
+first.</p>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+
+  
+  </div>
+  
+
+  </body>
+</html>

@@ -119,6 +119,93 @@ class Menu(spyral.scene.Scene):
                 # for QUIT event, terminate the program
                 exit(0)
 
+class CharacterSelect(spyral.scene.Scene):
+        
+    def __init__(self):
+        """Construct the Menu scene which shows the game title and 
+        instructions."""
+        
+        # Init from the super class
+        spyral.scene.Scene.__init__(self)
+        
+        # get default camera
+        self.camera = spyral.director.get_camera()
+        
+        # set camera's background 
+        self.camera.set_background(images['background'])
+
+        self.group = spyral.sprite.Group(self.camera)
+
+        # character select sprite
+        character_select = spyral.sprite.Sprite()
+        character_select.image = images['character_select']
+        character_select.rect.topleft = (0,0)
+        self.group.add(character_select)
+        
+        self.characters = []
+        self.names = []
+        for i in range(6):
+            character = spyral.sprite.Sprite()
+            character.image = pygame.transform.scale2x(images['head_left'][i]) 
+            character.rect.center = geom['character_center']
+            
+            name = spyral.sprite.Sprite()
+            name.image = fonts['character_name'].render(strings['characters'][i],
+                                                        True,colors['character_name'])
+            name.rect.center = geom['character_name_center']
+            
+            self.characters.append(character)
+            self.names.append(name)
+            
+        self.selected_character = 0
+        self.group.add(self.characters[self.selected_character], 
+                       self.names[self.selected_character])
+
+    def render(self):
+        """Render the current scene"""
+        self.group.draw()   # draw group of sprites
+        self.camera.draw()  # draw the current frame
+    
+    def update(self, tick):
+        """Update the current scene based on user input"""
+        
+        # get events (keyboard, mouse, etc.)
+        for event in pygame.event.get():
+            
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if geom['character_prev'].collidepoint(event.pos):
+
+                    self.group.remove(self.characters[self.selected_character], 
+                                      self.names[self.selected_character])
+
+                    if self.selected_character == 0:
+                        self.selected_character = len(self.characters) - 1
+                    else: 
+                        self.selected_character -= 1
+                        
+                    self.group.add(self.characters[self.selected_character], 
+                                   self.names[self.selected_character])
+
+                elif geom['character_next'].collidepoint(event.pos):
+
+                    self.group.remove(self.characters[self.selected_character], 
+                                      self.names[self.selected_character])
+
+                    if self.selected_character == len(self.characters) - 1:
+                        self.selected_character = 0
+                    else: 
+                        self.selected_character += 1
+                        
+                    self.group.add(self.characters[self.selected_character], 
+                                   self.names[self.selected_character])
+
+                elif geom['character_back'].collidepoint(event.pos):
+                    # Back button clicked
+                    spyral.director.pop()
+                
+            elif event.type == pygame.QUIT:
+                # for QUIT event, terminate the program
+                exit(0)
 
 class Score(spyral.sprite.Sprite):
 	def __init__(self):

@@ -59,6 +59,67 @@ def step(sprite,inc,count):
 			sprite.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 
+class Menu(spyral.scene.Scene):
+    """Menu Scene shows the game title, buttons to start game, select
+    characters or view achievements."""
+        
+    def __init__(self):
+        """Construct the Menu scene"""
+        
+        # Init from the super class
+        spyral.scene.Scene.__init__(self)
+        
+        # get default camera
+        self.camera = spyral.director.get_camera()
+        
+        # set camera's background 
+        self.camera.set_background(images['background'])
+        
+        # menu sprite
+        menu = spyral.sprite.Sprite()
+        menu.image = images['menu']
+        menu.rect.topleft = (0,0)
+        
+        self.group = spyral.sprite.Group(self.camera)
+        self.group.add(menu)
+
+    def render(self):
+        """Render the current scene"""
+        self.group.draw()   # draw group of sprites
+        self.camera.draw()  # draw the current frame
+    
+    def update(self, tick):
+        """Update the current scene based on user input"""
+        
+        # get events (keyboard, mouse, etc.)
+        for event in pygame.event.get():
+            
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if geom['menu_start'].collidepoint(event.pos):
+                    # Start button clicked
+                    # move to Game scene
+                    spyral.director.push(Game())
+                    
+                elif geom['menu_character'].collidepoint(event.pos):
+                    # Character Select button clicked 
+                    # move to CharacterSelect scene
+                    spyral.director.push(CharacterSelect())
+                    
+                elif geom['menu_unlock'].collidepoint(event.pos):
+                    # Achievements/Unlocks button clicked
+                    # move to Achievements scene
+                    #spyral.director.push(Achievements())
+                    pass
+
+                elif geom['menu_quit'].collidepoint(event.pos):
+                    # Quit button clicked
+                    exit(0)
+                
+            elif event.type == pygame.QUIT:
+                # for QUIT event, terminate the program
+                exit(0)
+
+
 class Score(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)

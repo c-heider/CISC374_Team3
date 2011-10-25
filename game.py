@@ -139,14 +139,15 @@ class SnakeNode(spyral.sprite.Sprite):
 		self.valImage = fonts['node'].render(str(self.value),True,colors['node'])
 		self.bodyImages = []
 		for ii in range(4):
+			self.bodyImages.append( images['body'+directionChars[ii]].copy())
 			if directions['up'] == ii:
-				self.bodyImages.append(images['body'+ directionChars[ii]].blit(pygame.transform.rotate(self.valImage,90),(BLOCK_SIZE/2,BLOCK_SIZE/2)))
+				self.bodyImages[ii].blit(pygame.transform.rotate(self.valImage,90),(BLOCK_SIZE/2,BLOCK_SIZE/2))
 			elif directions['down'] == ii:
-				self.bodyImages.append(images['body'+ directionChars[ii]].blit(pygame.transform.rotate(self.valImage,-90),(BLOCK_SIZE/2,BLOCK_SIZE/2)))  
+				self.bodyImages[ii].blit(pygame.transform.rotate(self.valImage,-90),(BLOCK_SIZE/2,BLOCK_SIZE/2))  
 			elif directions['left'] == ii:
-				self.bodyImages.append(images['body'+ directionChars[ii]].blit(pygame.transform.rotate(self.valImage,180),(BLOCK_SIZE/2,BLOCK_SIZE/2))) 
+				self.bodyImages[ii].blit(pygame.transform.rotate(self.valImage,180),(BLOCK_SIZE/2,BLOCK_SIZE/2)) 
 			elif directions['right'] == ii:
-				self.bodyImages.append(images['body'+ directionChars[ii]].blit(self.valImage,(BLOCK_SIZE/2,BLOCK_SIZE/2)))
+				self.bodyImages[ii].blit(self.valImage,(BLOCK_SIZE/2,BLOCK_SIZE/2))
 		self.image = self.bodyImages[self.direction] 
 		self.location = (-10,-10)
 		self.oldLocation = (-10,-10)
@@ -154,7 +155,7 @@ class SnakeNode(spyral.sprite.Sprite):
 	
 	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
-		self.image = images['body' + directionChars[self.direction]]
+		self.image = self.bodyImages[self.direction]
 		#self.image = fonts['node'].render(str(self.value),True,colors['node'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		

@@ -262,6 +262,7 @@ class Game(spyral.scene.Scene):
 			return
 				
 		elif self.collapseIndex == 1:
+			self.snake.render()
 			newIndex = self.snake.nodes.index(self.newNode)
 			self.snake.nodes[newIndex].location = self.collapseNodes[2].location
 			self.snake.nodes[newIndex].direction = self.collapseNodes[2].direction
@@ -275,6 +276,7 @@ class Game(spyral.scene.Scene):
 			return
 	
 		else:
+			self.snake.render()
 			newIndex = self.snake.nodes.index(self.newNode)
 			for i in range(0,newIndex-1):
 				self.snake.nodes[i].location = self.snake.nodes[i+1].location
@@ -428,12 +430,14 @@ class Game(spyral.scene.Scene):
 					if found == False: #move all of the nodes except the one closest to the head, and only if there's not a new node 
 						if len(self.snake.nodes) > 1:#but only if there are nodes to move
 							for i in range(0,len(self.snake.nodes)-1):
-								self.snake.nodes[i].location = self.snake.nodes[i+1].location
 								self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
+								self.snake.nodes[i].render()
+								self.snake.nodes[i].location = self.snake.nodes[i+1].location
 
 					if len(self.snake.nodes) > 0:#if there is a node next to the head, move it
-						self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
 						self.snake.nodes[len(self.snake.nodes)-1].direction = self.snake.direction
+						self.snake.nodes[len(self.snake.nodes)-1].render()						
+						self.snake.nodes[len(self.snake.nodes)-1].location = self.snake.location
 					
 					if found == True:
 						self.snake.nodes[len(self.snake.nodes)-1].oldLocation = self.snake.location

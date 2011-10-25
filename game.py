@@ -136,7 +136,7 @@ class SnakeNode(spyral.sprite.Sprite):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
 		self.direction = directions['right']
-		self.valImage = fonts['node'].render(str(self.value),True,colors['node'])
+		self.valImage = fonts['node'].render(str(self.value),True,colors['bodynode'])
 		self.bodyImages = []
 		for ii in range(4):
 			self.bodyImages.append( images['body'+directionChars[ii]].copy())
@@ -542,6 +542,7 @@ if __name__ == "__main__":
 	colors['background'] = (0, 0, 0)
 	colors['head'] = (255,255,255)
 	colors['node'] = (255,255,255)
+	colors['bodynode'] = (0,0,0)
 	colors['number'] = (255,255,255)
 	colors['operator'] = (255,255,255)
 	colors['length'] = (0,0,255)

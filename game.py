@@ -136,7 +136,18 @@ class SnakeNode(spyral.sprite.Sprite):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
 		self.direction = directions['right']
-		self.image = images['body'+ directionChars[self.direction]] 
+		self.valImage = fonts['node'].render(str(self.value),True,colors['node'])
+		self.bodyImages = []
+		for ii in range(4):
+			if directions['up'] == ii:
+				self.bodyImages.append(images['body'+ directionChars[ii]].blit(pygame.transform.rotate(self.valImage,90),(BLOCK_SIZE/2,BLOCK_SIZE/2)))
+			elif directions['down'] == ii:
+				self.bodyImages.append(images['body'+ directionChars[ii]].blit(pygame.transform.rotate(self.valImage,-90),(BLOCK_SIZE/2,BLOCK_SIZE/2)))  
+			elif directions['left'] == ii:
+				self.bodyImages.append(images['body'+ directionChars[ii]].blit(pygame.transform.rotate(self.valImage,180),(BLOCK_SIZE/2,BLOCK_SIZE/2))) 
+			elif directions['right'] == ii:
+				self.bodyImages.append(images['body'+ directionChars[ii]].blit(self.valImage,(BLOCK_SIZE/2,BLOCK_SIZE/2)))
+		self.image = self.bodyImages[self.direction] 
 		self.location = (-10,-10)
 		self.oldLocation = (-10,-10)
 		self.render()

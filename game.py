@@ -203,7 +203,6 @@ class Game(spyral.scene.Scene):
 			self.foodItems.append(Operator(self.foodItems,[],self.snake.location))
 		for i in self.foodItems:
 			self.group.add(i,)
-		self.group.add(self.snake)
 		self.moving = False
 		self.collapsing = False
 		self.collapseIndex = 0
@@ -219,6 +218,7 @@ class Game(spyral.scene.Scene):
 		self.expression = Expression()
 		self.group.add(self.expression)
 		self.clearing = False
+		self.group.add(self.snake)
 		
 	def findNextOp(self):
 		for n in self.snake.nodes:
@@ -262,7 +262,7 @@ class Game(spyral.scene.Scene):
 			return
 				
 		elif self.collapseIndex == 1:
-			self.snake.render()
+			#self.snake.render()
 			newIndex = self.snake.nodes.index(self.newNode)
 			self.snake.nodes[newIndex].location = self.collapseNodes[2].location
 			self.snake.nodes[newIndex].direction = self.collapseNodes[2].direction
@@ -276,7 +276,7 @@ class Game(spyral.scene.Scene):
 			return
 	
 		else:
-			self.snake.render()
+			#self.snake.render()
 			newIndex = self.snake.nodes.index(self.newNode)
 			for i in range(0,newIndex-1):
 				self.snake.nodes[i].location = self.snake.nodes[i+1].location
@@ -411,9 +411,7 @@ class Game(spyral.scene.Scene):
 							self.snake.nodes.append(newNode)
 							self.group.add(newNode)
 							
-							#so that the head is always drawn first
-							self.snake.kill()
-							self.group.add(self.snake)
+							
 							
 							itemName = type(f).__name__
 							self.snake.lastType = itemName
@@ -459,6 +457,8 @@ class Game(spyral.scene.Scene):
 							newItem = Number(self.foodItems,self.snake.nodes,self.snake.location)
 							self.foodItems.append(newItem)
 							self.group.add(newItem)
+							
+
 					
 					#start eating animation
 					if found == True:
@@ -515,7 +515,12 @@ class Game(spyral.scene.Scene):
 			return
 			
 				
-
+		#drawing order
+		for i in range(0,len(self.snake.nodes)):
+			self.snake.nodes[i].kill()
+			self.group.add(self.snake.nodes[i])
+			self.snake.kill()
+			self.group.add(self.snake)
 
 
 

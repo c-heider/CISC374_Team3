@@ -120,7 +120,10 @@ class Operator(spyral.sprite.Sprite):
 			self.val = operators[random.randrange(0,3,1)]
 		else:
 			self.val = operators[random.randrange(0,2,1)]
-		self.image = fonts['operator'].render(self.val,True,colors['operator'])
+		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
+		self.image = images['Apple1'].copy()
+		self.image.blit(self.valImage,(BLOCK_SIZE/4,BLOCK_SIZE/4))
+#		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 class Number(spyral.sprite.Sprite):
@@ -128,7 +131,10 @@ class Number(spyral.sprite.Sprite):
 		spyral.sprite.Sprite.__init__(self)
 		self.location = openSpace(foodItems,snake,head)
 		self.val = random.randrange(1,15,1)
-		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
+		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
+		self.image = images['Apple0'].copy()
+		self.image.blit(self.valImage,(BLOCK_SIZE/4,BLOCK_SIZE/4))
+#		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 class SnakeNode(spyral.sprite.Sprite):
@@ -548,15 +554,20 @@ if __name__ == "__main__":
 	colors['operator'] = (255,255,255)
 	colors['length'] = (0,0,255)
 	colors['expression'] = (255,0,0)
-
+	
+	size = 60
 	for direction in range(4):
 		bodyImageString = 'body' + directionChars[direction]
-		url = "Images/Adder/Adder_Body_" + str(directionChars[direction]) + ".png"
+		url = "Images/Adder/"+str(size)+"/Body_" + str(directionChars[direction]) + ".png"
 		images[bodyImageString] = pygame.image.load(url)
 		for frame in range(7):
 			headImageString= 'head' + str(frame) + directionChars[direction]
-			url = "Images/Adder/Adder_Head_" + str(directionChars[direction]) + str(frame)+ ".png"
+			url = "Images/Adder/"+str(size)+"/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
 			images[headImageString] = pygame.image.load(url)
+			
+	for apple in range(2):
+		url = "Images/Other/Apple"+str(apple)+".png"
+		images['Apple'+str(apple)] = pygame.image.load(url)
 			
 	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])

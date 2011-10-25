@@ -77,8 +77,13 @@ class Expression(spyral.sprite.Sprite):
 		self.render()
 		
 	def render(self):
-		self.image = fonts['Expression'].render( " ".join(self.express),True,colors['expression'])
-		self.rect.midtop = (geom['expressionx'],geom['text_height'])
+		self.image = fonts['expression'].render( " ".join(self.express),True,colors['expression'])
+		self.rect.midtop = (geom['expressionx'],geom['text_height_bottom'])
+		
+	def findExpression(self,s):
+		self.express = []
+		for n in s.nodes:
+			self.express.append(str(n.value))
 		
 class Goal(spyral.sprite.Sprite):
 	def __init__(self):
@@ -130,13 +135,16 @@ class SnakeNode(spyral.sprite.Sprite):
 	def __init__(self,val):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
+		self.direction = directions['right']
+		self.image = images['body'+ directionChars[self.direction]] 
 		self.location = (-10,-10)
 		self.oldLocation = (-10,-10)
 		self.render()
 	
 	def render(self):
 		#for moving sprites in this game, the image changes every time the direction does
-		self.image = fonts['node'].render(str(self.value),True,colors['node'])
+		self.image = images['body' + directionChars[self.direction]]
+		#self.image = fonts['node'].render(str(self.value),True,colors['node'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
 
@@ -173,6 +181,11 @@ class Snake(spyral.sprite.Sprite):
 			self.image = images['head0' + directionChars[self.direction]]
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 		
+	def findLength(self):
+		self.length = 0
+		for n in self.nodes:
+			self.length = self.length+1
+		
 class Game(spyral.scene.Scene):
 	def __init__(self):
 		spyral.scene.Scene.__init__(self)
@@ -199,6 +212,12 @@ class Game(spyral.scene.Scene):
 		self.count = 0
 		self.eating = False
 		self.eatIndex = 0
+		#self.score = Score()
+		#self.group.add(self.score)
+		self.length = Length()
+		self.group.add(self.length)
+		self.expression = Expression()
+		self.group.add(self.expression)
 		self.clearing = False
 		
 	def findNextOp(self):
@@ -208,6 +227,7 @@ class Game(spyral.scene.Scene):
 		for n in self.snake.nodes:
 			if n.value == "+" or n.value == "-":
 				return n
+				
 	
 	def exprEval(self):
 		if self.collapseNodes[1].value == "+":
@@ -271,6 +291,16 @@ class Game(spyral.scene.Scene):
 		self.camera.draw()
 	
 	def update(self,tick):
+		
+		#render length of the snake
+		self.snake.findLength()
+		self.length.val = self.snake.length
+		self.length.render()
+		
+		#render the expression on the bottom
+		self.expression.findExpression(self.snake)
+		self.expression.render()
+		
 		if self.eating == False and self.clearing == False:
 			self.count += 1
 			self.count %= TICKS_PER_MOVE		
@@ -287,7 +317,7 @@ class Game(spyral.scene.Scene):
 				newDirection = self.snake.direction
 				for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 					if event.type == pygame.KEYDOWN:
-						if event.key == pygame.K_SPACE:
+						if event.key == pygame.K_q:
 							spyral.director.pop()
 						if event.key == pygame.K_c and len(self.snake.nodes) > 1 and len(self.snake.nodes)%2 == 1:
 							self.collapsing = True
@@ -449,9 +479,7 @@ class Game(spyral.scene.Scene):
 					step(self.snake,STEP,self.count)
 				for n in self.snake.nodes:
 					if n.location != n.oldLocation:
-						step(n,STEP,self.count)
-				
-				
+						step(n,STEP,self.count)	
 			self.group.update()
 			
 		#eating animation
@@ -495,12 +523,17 @@ if __name__ == "__main__":
 	colors['node'] = (255,255,255)
 	colors['number'] = (255,255,255)
 	colors['operator'] = (255,255,255)
+	colors['length'] = (0,0,255)
+	colors['expression'] = (255,0,0)
 
 	for direction in range(4):
+		bodyImageString = 'body' + directionChars[direction]
+		url = "Images/Adder/Adder_Body_" + str(directionChars[direction]) + ".png"
+		images[bodyImageString] = pygame.image.load(url)
 		for frame in range(7):
-			imageString= 'head' + str(frame) + directionChars[direction]
+			headImageString= 'head' + str(frame) + directionChars[direction]
 			url = "Images/Adder/Adder_Head_" + str(directionChars[direction]) + str(frame)+ ".png"
-			images[imageString] = pygame.image.load(url)
+			images[headImageString] = pygame.image.load(url)
 			
 	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])
@@ -508,6 +541,14 @@ if __name__ == "__main__":
 	fonts['node'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
+	fonts['length'] = pygame.font.SysFont(None,BLOCK_SIZE)
+	fonts['expression'] = pygame.font.SysFont(None,BLOCK_SIZE)
+	
+	geom['lengthx'] = WIDTH - BLOCK_SIZE*2
+	geom['expressionx'] = 0
+	geom['text_height'] = 0
+	geom['text_height_bottom'] = HEIGHT - BLOCK_SIZE
+	
 	
 	spyral.director.init((WIDTH,HEIGHT), ticks_per_second=TICKS_PER_SECOND)
 	spyral.director.push(Game())

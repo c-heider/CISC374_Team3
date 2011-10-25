@@ -6,9 +6,9 @@ import math
 MOVES_PER_SECOND = 5
 TICKS_PER_SECOND = 15
 TICKS_PER_MOVE = TICKS_PER_SECOND/MOVES_PER_SECOND
-HEIGHT = 600
-WIDTH = 800
-BLOCK_SIZE = 32
+HEIGHT = 900
+WIDTH = 1200
+BLOCK_SIZE = 48
 STEP = float(BLOCK_SIZE/TICKS_PER_MOVE)
 
 operators = ["+","-","*","/"]
@@ -202,7 +202,8 @@ class Game(spyral.scene.Scene):
 	def __init__(self):
 		spyral.scene.Scene.__init__(self)
 		self.clock.ticks_per_second = TICKS_PER_SECOND
-		self.camera = spyral.director.get_camera()
+		self.root_camera = spyral.director.get_camera()
+		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))
 		self.group = spyral.sprite.Group(self.camera)
 		background = spyral.util.new_surface((WIDTH,HEIGHT))
 		background.fill(colors['background'])
@@ -303,7 +304,7 @@ class Game(spyral.scene.Scene):
 	
 	def render(self):
 		self.group.draw()
-		self.camera.draw()
+		self.root_camera.draw()
 	
 	def update(self,tick):
 		
@@ -537,7 +538,7 @@ class Game(spyral.scene.Scene):
 
 
 
-if __name__ == "__main__":
+def launch():
 	spyral.init()
 	
 	colors['background'] = (0, 0, 0)
@@ -572,10 +573,7 @@ if __name__ == "__main__":
 	geom['text_height'] = 0
 	geom['text_height_bottom'] = HEIGHT - BLOCK_SIZE
 	
-	
-	spyral.director.init((WIDTH,HEIGHT))
 	spyral.director.push(Game())
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)
-	spyral.director.run()

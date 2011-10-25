@@ -136,6 +136,12 @@ class SnakeNode(spyral.sprite.Sprite):
 		spyral.sprite.Sprite.__init__(self)
 		self.value = val
 		self.direction = directions['right']
+		self.nodeImages = []
+		self.numImage = fonts['node'].render(str(self.value),True,colors['node'])
+		for ii in range(4):
+			self.nodeImages.append(images['body'+ directionChars[ii]])
+			self.nodeImages[ii].blit(self.numImage, (BLOCK_SIZE/2, BLOCK_SIZE/2))
+		self.image = images['body'+ directionChars[self.direction]] 
 		self.image = images['body'+ directionChars[self.direction]] 
 		self.location = (-10,-10)
 		self.oldLocation = (-10,-10)

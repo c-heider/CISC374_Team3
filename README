@@ -1,0 +1,1 @@
+from a command line, run "python test_launcher.py -r 800 600"

@@ -10,6 +10,8 @@ TICKS_PER_MOVE = TICKS_PER_SECOND/MOVES_PER_SECOND
 HEIGHT = 900
 WIDTH = 1200
 BLOCK_SIZE = 60
+APPLE_SIZE = 40
+APPLE_D = BLOCK_SIZE - APPLE_SIZE
 STEP = float(BLOCK_SIZE/TICKS_PER_MOVE)
 
 operators = ["+","-","*","/"]
@@ -246,7 +248,7 @@ class Length(spyral.sprite.Sprite):
 
 	def render(self):
 		self.image = fonts['length'].render("Length: %d" % self.val,True,colors['length'])
-		self.rect.midtop = (geom['lengthx'],geom['text_height'])
+		self.rect.midtop = (geom['lengthx'],geom['text_height_bottom'])
 
 class Operator(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
@@ -265,9 +267,9 @@ class Operator(spyral.sprite.Sprite):
 			self.val = operators[random.randrange(0,2,1)]
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
 		self.image = images['Apple1'].copy()
-		self.image.blit(self.valImage,(BLOCK_SIZE/4,BLOCK_SIZE/4))
+		self.image.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
 #		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
-		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + (BLOCK_SIZE - APPLE_D) /2,self.location[1]*BLOCK_SIZE + (BLOCK_SIZE - APPLE_D)/2)
 
 class Number(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
@@ -276,7 +278,7 @@ class Number(spyral.sprite.Sprite):
 		self.val = random.randrange(1,15,1)
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
 		self.image = images['Apple0'].copy()
-		self.image.blit(self.valImage,(BLOCK_SIZE/4,BLOCK_SIZE/4))
+		self.image.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
 #		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
@@ -290,13 +292,16 @@ class SnakeNode(spyral.sprite.Sprite):
 		for ii in range(4):
 			self.bodyImages.append( images['body'+directionChars[ii]].copy())
 			if directions['up'] == ii:
-				self.bodyImages[ii].blit(pygame.transform.rotate(self.valImage,90),(BLOCK_SIZE/2,BLOCK_SIZE/2))
+				temp = pygame.transform.rotate(self.valImage,90).copy()
+				self.bodyImages[ii].blit(temp,((BLOCK_SIZE - temp.get_size()[0])/2,(BLOCK_SIZE - temp.get_size()[1])/2))
 			elif directions['down'] == ii:
-				self.bodyImages[ii].blit(pygame.transform.rotate(self.valImage,-90),(BLOCK_SIZE/2,BLOCK_SIZE/2))  
+				temp = pygame.transform.rotate(self.valImage,-90).copy()
+				self.bodyImages[ii].blit(temp,((BLOCK_SIZE - temp.get_size()[0])/2,(BLOCK_SIZE - temp.get_size()[1])/2))  
 			elif directions['left'] == ii:
-				self.bodyImages[ii].blit(pygame.transform.rotate(self.valImage,180),(BLOCK_SIZE/2,BLOCK_SIZE/2)) 
+				temp = pygame.transform.rotate(self.valImage,180).copy()
+				self.bodyImages[ii].blit(temp,((BLOCK_SIZE - temp.get_size()[0])/2,(BLOCK_SIZE - temp.get_size()[1])/2))
 			elif directions['right'] == ii:
-				self.bodyImages[ii].blit(self.valImage,(BLOCK_SIZE/2,BLOCK_SIZE/2))
+				self.bodyImages[ii].blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2))
 		self.image = self.bodyImages[self.direction] 
 		self.location = (-10,-10)
 		self.oldLocation = (-10,-10)
@@ -696,7 +701,7 @@ def launch():
 	colors['bodynode'] = (0,0,0)
 	colors['number'] = (255,255,255)
 	colors['operator'] = (255,255,255)
-	colors['length'] = (0,0,255)
+	colors['length'] = (0,0,0)
 	colors['expression'] = (255,0,0)
 	colors['character_name'] = (0,0,0)
 	

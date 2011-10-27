@@ -9,6 +9,7 @@ TICKS_PER_SECOND = 15
 TICKS_PER_MOVE = TICKS_PER_SECOND/MOVES_PER_SECOND
 HEIGHT = 900
 WIDTH = 1200
+SCALE = 1.5
 BLOCK_SIZE = 60
 APPLE_SIZE = 40
 APPLE_D = BLOCK_SIZE - APPLE_SIZE
@@ -77,13 +78,11 @@ class Menu(spyral.scene.Scene):
 		spyral.scene.Scene.__init__(self)
 		self.root_camera = spyral.director.get_camera()
 		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))		
-		background = spyral.util.new_surface((WIDTH,HEIGHT))
-		background.fill(colors['background'])
-		self.camera.set_background(background)
+		self.camera.set_background(images['background'])
 		
 		menu = spyral.sprite.Sprite()
 		menu.image = images['menu']
-		menu.rect.center = self.camera.get_rect().center
+		menu.rect.topleft = (0,0)
 		self.group = spyral.sprite.Group(self.camera)
 		self.group.add(menu)
 
@@ -705,10 +704,28 @@ class Game(spyral.scene.Scene):
 			self.snake.kill()
 			self.group.add(self.snake)
 
+def scale_graphics():
+
+	# scale images
+	for k in ('background', 'menu', 'character_select'):
+		v = images[k]
+		w, h = v.get_size()
+		images[k] = pygame.transform.smoothscale(v, (int(w*SCALE), int(h*SCALE)))
+  
+	# scale geom
+	for k, r in geom.items():
+		if isinstance(r, pygame.Rect):
+			geom[k] = pygame.Rect(r.left * SCALE, r.top * SCALE, 
+								r.width * SCALE, r.height * SCALE)
+				
+		elif isinstance(r, tuple):
+			geom[k] = tuple([i*SCALE for i in r])
 
 
 def launch():
 	spyral.init()
+	spyral.director.init((WIDTH,HEIGHT), ticks_per_second=TICKS_PER_SECOND)
+
 
 	colors['background'] = (0, 152, 254)
 	colors['head'] = (255,255,255)
@@ -719,7 +736,8 @@ def launch():
 	colors['length'] = (0,0,0)
 	colors['expression'] = (255,0,0)
 	colors['character_name'] = (0,0,0)
-	
+
+	fonts['character_name'] = pygame.font.SysFont(None, BLOCK_SIZE)
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
@@ -773,8 +791,10 @@ def launch():
 
 	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])
+	scale_graphics()
 
 	spyral.director.push(Menu())
+	spyral.director.push(Game())
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)

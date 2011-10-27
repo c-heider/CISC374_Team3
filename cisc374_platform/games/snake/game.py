@@ -367,8 +367,26 @@ class Snake(spyral.sprite.Sprite):
 			self.length = self.length+1
 
 class Game(spyral.scene.Scene):
-	def __init__(self):
+	def __init__(self, colorInt):
 		spyral.scene.Scene.__init__(self)
+
+		#Init Images
+		colorInt = colorInt
+		size = 60
+		for direction in range(4):
+			bodyImageString = 'body' + directionChars[direction]
+			url = "Images/Adder/"+ str(size) +"/"+ str(colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
+			images[bodyImageString] = pygame.image.load(url)
+			for frame in range(7):
+				headImageString= 'head' + str(frame) + directionChars[direction]
+				url = "Images/Adder/"+ str(size) +"/"+ str(colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
+				images[headImageString] = pygame.image.load(url)
+
+		for apple in range(2):
+			url = "Images/Other/Apple"+str(apple)+".png"
+			images['Apple'+str(apple)] = pygame.image.load(url)
+
+		
 		self.clock.ticks_per_second = TICKS_PER_SECOND
 		self.root_camera = spyral.director.get_camera()
 		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))		
@@ -726,7 +744,6 @@ def launch():
 	spyral.init()
 
 
-
 	colors['background'] = (0, 152, 254)
 	colors['head'] = (255,255,255)
 	colors['node'] = (255,255,255)
@@ -774,26 +791,12 @@ def launch():
 	images['background'] = spyral.util.load_image(path.join('Images/Other', 'background.png'))
 	images['menu'] = spyral.util.load_image(path.join('Images/Other', 'menu.png'))
 	images['character_select'] = spyral.util.load_image(path.join('Images/Other', 'character_select.png'))
-	
-	size = 60
-	for direction in range(4):
-		bodyImageString = 'body' + directionChars[direction]
-		url = "Images/Adder/"+str(size)+"/Body_" + str(directionChars[direction]) + ".png"
-		images[bodyImageString] = pygame.image.load(url)
-		for frame in range(7):
-			headImageString= 'head' + str(frame) + directionChars[direction]
-			url = "Images/Adder/"+str(size)+"/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
-			images[headImageString] = pygame.image.load(url)
-
-	for apple in range(2):
-		url = "Images/Other/Apple"+str(apple)+".png"
-		images['Apple'+str(apple)] = pygame.image.load(url)
 
 	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])
 	scale_graphics()
 
-	spyral.director.push(Game())
+	spyral.director.push(Game(1))
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)

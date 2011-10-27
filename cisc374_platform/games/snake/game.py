@@ -60,6 +60,14 @@ def step(sprite,inc,count):
 	else:
 		sprite.rect.center = (sprite.oldLocation[0]*BLOCK_SIZE + BLOCK_SIZE/2 + int(inc*count),
 			sprite.oldLocation[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+	
+	if type(sprite).__name__ == 'SnakeNode':
+		yoffset = (BLOCK_SIZE/4)*math.cos(.02*sprite.rect.center[0])
+		xoffset = (BLOCK_SIZE/4)*math.cos(.02*sprite.rect.center[1])
+		if sprite.direction == directions['right'] or sprite.direction == directions['left']:
+			sprite.rect.center = (sprite.rect.center[0],sprite.rect.center[1]+yoffset)
+		else:
+			sprite.rect.center = (sprite.rect.center[0]+xoffset,sprite.rect.center[1])
 
 class Menu(spyral.scene.Scene):
 	"""Menu Scene shows the game title, buttons to start game, select
@@ -312,6 +320,13 @@ class SnakeNode(spyral.sprite.Sprite):
 		self.image = self.bodyImages[self.direction]
 		#self.image = fonts['node'].render(str(self.value),True,colors['node'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+		yoffset = (BLOCK_SIZE/4)*math.cos(.02*self.rect.center[0])
+		xoffset = (BLOCK_SIZE/4)*math.cos(.02*self.rect.center[1])
+		if self.direction == directions['right'] or self.direction == directions['left']:
+			self.rect.center = (self.rect.center[0],self.rect.center[1]+yoffset)
+		else:
+			self.rect.center = (self.rect.center[0]+xoffset,self.rect.center[1])
+			
 
 
 

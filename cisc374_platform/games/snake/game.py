@@ -150,12 +150,12 @@ class CharacterSelect(spyral.scene.Scene):
 		self.names = []
 		for i in range(6):
 			character = spyral.sprite.Sprite()
-			character.image = pygame.transform.scale2x(images['head_left'][i]) 
+			character.image = pygame.transform.scale2x(images['head%iE' % i]) 
 			character.rect.center = geom['character_center']
 			
 			name = spyral.sprite.Sprite()
 			name.image = fonts['character_name'].render(strings['characters'][i],
-														True,colors['character_name'])
+									True,colors['character_name'])
 			name.rect.center = geom['character_name_center']
 			
 			self.characters.append(character)
@@ -793,8 +793,8 @@ def launch():
 	#images['head'].fill(colors['head'])
 	scale_graphics()
 
-	spyral.director.push(Menu())
 	spyral.director.push(Game())
+	spyral.director.push(Menu())
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)

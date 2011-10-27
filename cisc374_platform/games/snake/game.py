@@ -148,9 +148,9 @@ class CharacterSelect(spyral.scene.Scene):
 		
 		self.characters = []
 		self.names = []
-		for i in range(6):
+		for i in range(3):
 			character = spyral.sprite.Sprite()
-			character.image = pygame.transform.scale2x(images['head%iE' % i]) 
+			character.image = spyral.util.load_image("images/Adder/CharSelect/" + str(i) + ".png") 
 			character.rect.center = geom['character_center']
 			
 			name = spyral.sprite.Sprite()
@@ -724,7 +724,7 @@ def scale_graphics():
 
 def launch():
 	spyral.init()
-	spyral.director.init((WIDTH,HEIGHT), ticks_per_second=TICKS_PER_SECOND)
+
 
 
 	colors['background'] = (0, 152, 254)
@@ -741,8 +741,8 @@ def launch():
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
-	fonts['length'] = pygame.font.SysFont(None,BLOCK_SIZE)
-	fonts['expression'] = pygame.font.SysFont(None,BLOCK_SIZE)
+	fonts['length'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
+	fonts['expression'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 
 	geom['lengthx'] = WIDTH - BLOCK_SIZE*2
 	geom['expressionx'] = 0
@@ -794,7 +794,6 @@ def launch():
 	scale_graphics()
 
 	spyral.director.push(Game())
-	spyral.director.push(Menu())
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)

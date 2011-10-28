@@ -226,11 +226,14 @@ class Expression(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
 		self.express = []
+		self.oldExpress = [0]
 		self.render()
 
 	def render(self):
-		self.image = fonts['expression'].render( " ".join(self.express),True,colors['expression'])
-		self.rect.midtop = (geom['expressionx'],geom['text_height_bottom'])
+		if self.express != self.oldExpress:
+			self.image = fonts['expression'].render( " ".join(self.express),True,colors['expression'])
+			self.rect.midtop = (geom['expressionx'],geom['text_height_bottom'])
+			self.oldExpress = self.express
 
 	def findExpression(self,s):
 		self.express = []
@@ -251,11 +254,14 @@ class Length(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
 		self.val = 0
+		self.oldVal = 1
 		self.render()
 
 	def render(self):
-		self.image = fonts['length'].render("Length: %d" % self.val,True,colors['length'])
-		self.rect.midtop = (geom['lengthx'],geom['text_height_bottom'])
+		if self.val != self.oldVal:
+			self.image = fonts['length'].render("Length: %d" % self.val,True,colors['length'])
+			self.rect.midtop = (geom['lengthx'],geom['text_height_bottom'])
+			self.oldVal = self.val
 
 class Operator(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):

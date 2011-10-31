@@ -214,7 +214,6 @@ class CharacterSelect(spyral.scene.Scene):
 class Score(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'food'
 		self.val = 0
 		self.render()
 
@@ -226,7 +225,6 @@ class Score(spyral.sprite.Sprite):
 class Expression(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'food'
 		self.express = []
 		self.oldExpress = [0]
 		self.render()
@@ -245,7 +243,6 @@ class Expression(spyral.sprite.Sprite):
 class Goal(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'food'
 		self.val = random.randrange(0,20,1)
 		self.render()
 
@@ -256,7 +253,6 @@ class Goal(spyral.sprite.Sprite):
 class Length(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'food'
 		self.val = 0
 		self.oldVal = 1
 		self.render()
@@ -270,7 +266,6 @@ class Length(spyral.sprite.Sprite):
 class Operator(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'food'
 		self.location = openSpace(foodItems,snake,head)
 		used = False
 		for f in foodItems:
@@ -292,7 +287,6 @@ class Operator(spyral.sprite.Sprite):
 class Number(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'food'
 		self.location = openSpace(foodItems,snake,head)
 		self.val = random.randrange(1,15,1)
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
@@ -304,7 +298,6 @@ class Number(spyral.sprite.Sprite):
 class SnakeNode(spyral.sprite.Sprite):
 	def __init__(self,val):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'snake'
 		self.value = val
 		self.direction = directions['right']
 		self.valImage = fonts['node'].render(str(self.value),True,colors['bodynode'])
@@ -345,7 +338,6 @@ class SnakeNode(spyral.sprite.Sprite):
 class Snake(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
-		self.layer = 'head'
 		self.location = (9,7)
 		self.oldLocation = self.location
 		self.nodes = []
@@ -403,7 +395,7 @@ class Game(spyral.scene.Scene):
 		
 		self.clock.ticks_per_second = TICKS_PER_SECOND
 		self.root_camera = spyral.director.get_camera()
-		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT),layers=['food','snake','head'])		
+		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))		
 		self.group = spyral.sprite.Group(self.camera)
 		background = spyral.util.new_surface((WIDTH,HEIGHT))
 		background.fill(colors['background'])
@@ -455,7 +447,6 @@ class Game(spyral.scene.Scene):
 
 	def collapse(self):
 		if self.collapseIndex == 0:
-			self.moving = False
 			operatorNode = self.findNextOp()
 			opIndex = self.snake.nodes.index(operatorNode)
 			self.collapseNodes.append(self.snake.nodes[opIndex-1])
@@ -730,7 +721,12 @@ class Game(spyral.scene.Scene):
 			return
 
 
-		
+		#drawing order
+		for i in range(0,len(self.snake.nodes)):
+			self.snake.nodes[i].kill()
+			self.group.add(self.snake.nodes[i])
+			self.snake.kill()
+			self.group.add(self.snake)
 
 def scale_graphics():
 
@@ -754,7 +750,7 @@ def launch():
 	spyral.init()
 
 
-	colors['background'] = (0, 152, 254)
+	colors['background'] = (222, 152, 254)
 	colors['head'] = (255,255,255)
 	colors['node'] = (255,255,255)
 	colors['bodynode'] = (0,0,0)
@@ -806,7 +802,7 @@ def launch():
 	#images['head'].fill(colors['head'])
 	scale_graphics()
 
-	spyral.director.push(Game(1))
+	spyral.director.push(Game(2))
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)

@@ -413,6 +413,8 @@ class Game(spyral.scene.Scene):
 		self.collapsing = False
 		self.collapseIndex = 0
 		self.collapseNodes = []
+		self.collapseCase = 1
+		self.operatorNode = None
 		self.newNode = None
 		self.count = 0
 		self.eating = False
@@ -428,11 +430,29 @@ class Game(spyral.scene.Scene):
 
 	def findNextOp(self):
 		for n in self.snake.nodes:
-			if n.value == "/" or n.value == "*":
-				return n
+			if n.value == "*":
+				self.collapseCase = 1
+				self.operatorNode = n
+				return
 		for n in self.snake.nodes:
 			if n.value == "+" or n.value == "-":
-				return n
+				if len(self.snake.nodes) <= 3 or (self.snake.nodes[3].value == "+" or self.snake.nodes[3].value == "-"):
+					self.collapseCase = 1
+					self.operatorNode = n
+					return
+				elif self.snake.nodes[3].value == "/":
+					self.collapseCase = 2
+					self.operatorNode = n
+					return
+			elif n.value == "/":
+				if len(self.snake.nodes) > 5 and self.snake.nodes[5].value == "/":
+					self.collapseCase = 4
+					self.operatorNode = self.snake.nodes[3]
+					return
+				else:
+					self.collapseCase = 3
+					self.operatorNode = self.snake.nodes[3]
+					return
 
 
 	def exprEval(self):
@@ -447,52 +467,58 @@ class Game(spyral.scene.Scene):
 
 	def collapse(self):
 		if self.collapseIndex == 0:
-			operatorNode = self.findNextOp()
-			opIndex = self.snake.nodes.index(operatorNode)
-			self.collapseNodes.append(self.snake.nodes[opIndex-1])
-			self.collapseNodes.append(self.snake.nodes[opIndex])
-			self.collapseNodes.append(self.snake.nodes[opIndex+1])
-			for n in self.collapseNodes:
-				n.kill()
-			newNode = SnakeNode(self.exprEval())
-			self.group.add(newNode)
-			newNode.location = self.snake.nodes[opIndex].location
-			newNode.oldLocation = newNode.location
-			newNode.direction = self.snake.nodes[opIndex].direction
-			self.snake.nodes.insert(opIndex,newNode)
-			for n in self.collapseNodes:
-				self.snake.nodes.remove(n)
+			self.findNextOp()
 			self.collapseIndex = 1
-			self.newNode = newNode
-			newNode.render()
 			return
+		
+		if self.collapseCase == 1:
+			if self.collapseIndex == 1:
+				self.moving = False
+				opIndex = self.snake.nodes.index(self.operatorNode)
+				self.collapseNodes.append(self.snake.nodes[opIndex-1])
+				self.collapseNodes.append(self.snake.nodes[opIndex])
+				self.collapseNodes.append(self.snake.nodes[opIndex+1])
+				for n in self.collapseNodes:
+					n.kill()
+				newNode = SnakeNode(self.exprEval())
+				self.group.add(newNode)
+				newNode.location = self.snake.nodes[opIndex].location
+				newNode.oldLocation = newNode.location
+				newNode.direction = self.snake.nodes[opIndex].direction
+				self.snake.nodes.insert(opIndex,newNode)
+				for n in self.collapseNodes:
+					self.snake.nodes.remove(n)
+				self.collapseIndex = 2
+				self.newNode = newNode
+				newNode.render()
+				return
 
-		elif self.collapseIndex == 1:
-			#self.snake.render()
-			newIndex = self.snake.nodes.index(self.newNode)
-			self.snake.nodes[newIndex].location = self.collapseNodes[2].location
-			self.snake.nodes[newIndex].direction = self.collapseNodes[2].direction
-			for i in range(0,newIndex-1):
-				self.snake.nodes[i].location = self.snake.nodes[i+1].location
-				self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
-			if newIndex > 0:
-				self.snake.nodes[newIndex-1].location = self.collapseNodes[0].location
-				self.snake.nodes[newIndex-1].direction = self.collapseNodes[0].direction
-			self.collapseIndex = 2
-			return
+			elif self.collapseIndex == 2:
+				#self.snake.render()
+				newIndex = self.snake.nodes.index(self.newNode)
+				self.snake.nodes[newIndex].location = self.collapseNodes[2].location
+				self.snake.nodes[newIndex].direction = self.collapseNodes[2].direction
+				for i in range(0,newIndex-1):
+					self.snake.nodes[i].location = self.snake.nodes[i+1].location
+					self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
+				if newIndex > 0:
+					self.snake.nodes[newIndex-1].location = self.collapseNodes[0].location
+					self.snake.nodes[newIndex-1].direction = self.collapseNodes[0].direction
+				self.collapseIndex = 3
+				return
 
-		else:
-			#self.snake.render()
-			newIndex = self.snake.nodes.index(self.newNode)
-			for i in range(0,newIndex-1):
-				self.snake.nodes[i].location = self.snake.nodes[i+1].location
-				self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
-			if newIndex > 0:
-				self.snake.nodes[newIndex-1].location = self.collapseNodes[1].location
-				self.snake.nodes[newIndex-1].direction = self.collapseNodes[1].direction
-			for n in self.collapseNodes[:]:
-				self.collapseNodes.remove(n)
-			self.collapseIndex = 0
+			elif self.collapseIndex == 3:
+				#self.snake.render()
+				newIndex = self.snake.nodes.index(self.newNode)
+				for i in range(0,newIndex-1):
+					self.snake.nodes[i].location = self.snake.nodes[i+1].location
+					self.snake.nodes[i].direction = self.snake.nodes[i+1].direction
+				if newIndex > 0:
+					self.snake.nodes[newIndex-1].location = self.collapseNodes[1].location
+					self.snake.nodes[newIndex-1].direction = self.collapseNodes[1].direction
+				for n in self.collapseNodes[:]:
+					self.collapseNodes.remove(n)
+				self.collapseIndex = 0
 
 	def render(self):
 		self.group.draw()

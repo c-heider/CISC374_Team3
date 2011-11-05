@@ -2,6 +2,7 @@ import pygame
 import spyral
 import random
 import math
+import fractions
 from os import path
 
 MOVES_PER_SECOND = 5
@@ -275,7 +276,7 @@ class Operator(spyral.sprite.Sprite):
 			if snake[len(snake)-1].value == "/":
 				used = True
 		if used == False:
-			self.val = operators[random.randrange(0,3,1)]
+			self.val = operators[random.randrange(0,4,1)]
 		else:
 			self.val = operators[random.randrange(0,2,1)]
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
@@ -467,13 +468,15 @@ class Game(spyral.scene.Scene):
 
 	def collapse(self):
 		if self.collapseIndex == 0:
+			for n in self.collapseNodes[:]:
+				self.collapseNodes.remove(n)
 			self.findNextOp()
 			self.collapseIndex = 1
+			self.moving = False
 			return
 		
 		if self.collapseCase == 1:
 			if self.collapseIndex == 1:
-				self.moving = False
 				opIndex = self.snake.nodes.index(self.operatorNode)
 				self.collapseNodes.append(self.snake.nodes[opIndex-1])
 				self.collapseNodes.append(self.snake.nodes[opIndex])
@@ -516,10 +519,147 @@ class Game(spyral.scene.Scene):
 				if newIndex > 0:
 					self.snake.nodes[newIndex-1].location = self.collapseNodes[1].location
 					self.snake.nodes[newIndex-1].direction = self.collapseNodes[1].direction
-				for n in self.collapseNodes[:]:
-					self.collapseNodes.remove(n)
-				self.collapseIndex = 0
 
+				self.collapseIndex = 0
+				return
+				
+		elif self.collapseCase == 2 or self.collapseCase == 3:
+			
+			if self.collapseIndex == 1:
+			
+				for i in range(0,5):
+					self.collapseNodes.append(self.snake.nodes[i])
+				for n in self.collapseNodes:
+					n.kill()				
+				for n in self.collapseNodes:
+					self.snake.nodes.remove(n)
+					
+				if self.collapseCase == 2:
+					f = fractions.Fraction(self.collapseNodes[2].value,self.collapseNodes[4].value)
+					if self.collapseNodes[1].value == "+":
+						f = f + self.collapseNodes[0].value
+					elif self.collapseNodes[1].value == "-":
+						f = self.collapseNodes[0].value - f
+				elif self.collapseCase == 3:
+					f = fractions.Fraction(self.collapseNodes[0].value,self.collapseNodes[2].value)
+					if self.collapseNodes[3].value == "+":
+						f = f + self.collapseNodes[4].value
+					elif self.collapseNodes[3].value == "-":
+						f = f - self.collapseNodes[4].value
+				
+				newNum = SnakeNode(f.numerator)
+				newOp = SnakeNode("/")
+				newDenom = SnakeNode(f.denominator)
+				
+				self.group.add(newNum)
+				self.group.add(newDenom)
+				self.group.add(newOp)
+
+				self.snake.nodes.insert(0,newDenom)
+				self.snake.nodes.insert(0,newOp)
+				self.snake.nodes.insert(0,newNum)
+				
+				newNum.location = self.collapseNodes[1].location
+				newNum.oldLocation = self.collapseNodes[1].oldLocation
+				newNum.direction = self.collapseNodes[1].direction
+				
+				newOp.location = self.collapseNodes[2].location
+				newOp.oldLocation = self.collapseNodes[2].oldLocation
+				newOp.direction = self.collapseNodes[2].direction
+				
+				newDenom.location = self.collapseNodes[3].location
+				newDenom.oldLocation = self.collapseNodes[3].oldLocation
+				newDenom.direction = self.collapseNodes[3].direction
+				
+				newOp.render()
+				newNum.render()
+				newDenom.render()
+				
+				self.collapseIndex = 2
+				
+				return
+				
+			elif self.collapseIndex == 2:
+				for i in range(0,3):
+					self.snake.nodes[i].location = self.collapseNodes[i+2].location
+					self.snake.nodes[i].direction = self.collapseNodes[i+2].direction
+					
+				self.collapseIndex = 3
+				return
+				
+			elif self.collapseIndex == 3:
+				self.collapseIndex = 0
+				return
+				
+		if self.collapseCase == 4:
+		
+			if self.collapseIndex == 1:
+			
+				for i in range(0,7):
+					self.collapseNodes.append(self.snake.nodes[i])
+				for n in self.collapseNodes:
+					n.kill()				
+				for n in self.collapseNodes:
+					self.snake.nodes.remove(n)
+					
+				f1 = fractions.Fraction(self.collapseNodes[0].value,self.collapseNodes[2].value)
+				f2 = fractions.Fraction(self.collapseNodes[4].value,self.collapseNodes[6].value)
+				if self.collapseNodes[3].value == "+":
+					f = f1+f2
+				else:
+					f = f1-f2
+					
+				newNum = SnakeNode(f.numerator)
+				newOp = SnakeNode("/")
+				newDenom = SnakeNode(f.denominator)
+				
+				self.group.add(newNum)
+				self.group.add(newDenom)
+				self.group.add(newOp)
+
+				self.snake.nodes.insert(0,newDenom)
+				self.snake.nodes.insert(0,newOp)
+				self.snake.nodes.insert(0,newNum)
+				
+				newNum.location = self.collapseNodes[2].location
+				newNum.oldLocation = self.collapseNodes[2].oldLocation
+				newNum.direction = self.collapseNodes[2].direction
+				
+				newOp.location = self.collapseNodes[3].location
+				newOp.oldLocation = self.collapseNodes[3].oldLocation
+				newOp.direction = self.collapseNodes[3].direction
+				
+				newDenom.location = self.collapseNodes[4].location
+				newDenom.oldLocation = self.collapseNodes[4].oldLocation
+				newDenom.direction = self.collapseNodes[4].direction
+				
+				newOp.render()
+				newNum.render()
+				newDenom.render()				
+				
+				self.collapseIndex = 2
+				return
+				
+			elif self.collapseIndex == 2:
+				for i in range(0,3):
+					self.snake.nodes[i].location = self.collapseNodes[i+3].location
+					self.snake.nodes[i].direction = self.collapseNodes[i+3].direction
+					
+				self.collapseIndex = 3
+				return
+			
+			elif self.collapseIndex == 3:
+				for i in range(0,3):
+					self.snake.nodes[i].location = self.collapseNodes[i+4].location
+					self.snake.nodes[i].direction = self.collapseNodes[i+4].direction
+					
+				self.collapseIndex = 4
+				return
+				
+			elif self.collapseIndex == 4:
+				self.collapseIndex = 0
+				return
+				
 	def render(self):
 		self.group.draw()
 		self.root_camera.draw()
@@ -553,7 +693,9 @@ class Game(spyral.scene.Scene):
 					if event.type == pygame.KEYDOWN:
 						if event.key == pygame.K_q:
 							spyral.director.pop()
-						if event.key == pygame.K_c and len(self.snake.nodes) > 1 and len(self.snake.nodes)%2 == 1:
+						if event.key == pygame.K_c and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
+							if len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/":
+								return
 							self.collapsing = True
 							return
 						if event.key == pygame.K_UP and (self.snake.direction != directions['down'] or len(self.snake.nodes) == 0):
@@ -636,6 +778,9 @@ class Game(spyral.scene.Scene):
 					found = False
 					for f in self.foodItems:
 						if f.location == newloc and type(f).__name__ != self.snake.lastType:
+							if f.val == "/" and self.snake.nodes[len(self.snake.nodes)-2].value == "/":
+								continue
+							
 							found = True
 							newNode = SnakeNode(f.val)
 							newNode.location = self.snake.location
@@ -706,7 +851,8 @@ class Game(spyral.scene.Scene):
 				self.collapse()
 
 			#break out of the collapse when it's finished
-			if self.collapsing and self.collapseIndex == 0 and self.count == 0 and len(self.snake.nodes) == 1:
+			if (self.collapsing and self.collapseIndex == 0 and self.count == 0 and 
+					(len(self.snake.nodes) == 1 or (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"))):
 				self.collapsing = False
 
 			#step each Sprite towards its new location

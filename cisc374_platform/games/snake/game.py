@@ -428,6 +428,8 @@ class Game(spyral.scene.Scene):
 		self.group.add(self.expression)
 		self.clearing = False
 		self.group.add(self.snake)
+		
+
 
 	def findNextOp(self):
 		for n in self.snake.nodes:
@@ -777,8 +779,8 @@ class Game(spyral.scene.Scene):
 					#test for target
 					found = False
 					for f in self.foodItems:
-						if f.location == newloc and type(f).__name__ != self.snake.lastType:
-							if f.val == "/" and self.snake.nodes[len(self.snake.nodes)-2].value == "/":
+						if f.location == newloc and type(f).__name__ != self.snake.lastType and self.moving and self.clearing == False:
+							if (f.val == "/" or f.val == "*") and self.snake.nodes[len(self.snake.nodes)-2].value == "/":
 								continue
 							
 							found = True

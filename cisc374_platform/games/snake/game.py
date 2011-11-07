@@ -17,11 +17,11 @@ APPLE_D = BLOCK_SIZE - APPLE_SIZE
 STEP = float(BLOCK_SIZE/TICKS_PER_MOVE)
 
 operators = ["+","-","*","/"]
-directionChars = ['N','S','E','W']
+directionChars = ['N','E','S','W']
 directions = {}
 directions['up'] = 0
-directions['down'] = 1
-directions['right'] = 2
+directions['down'] = 2
+directions['right'] = 1
 directions['left'] = 3
 
 # locations are in terms of the discrete grid, with indexing beginning at 0. top-left is origin.
@@ -428,9 +428,74 @@ class Game(spyral.scene.Scene):
 		self.group.add(self.expression)
 		self.clearing = False
 		self.group.add(self.snake)
+		self.expandLocations = []
+		self.expandDirections = []
 		
+	#get two empty spaces and corresponding directions for expansion. Return False if such do not exist
+	def findExpansion(self):
+		self.expandLocations = []
+		self.expandDirections = []
+		for i in range(0,4):
+		
+			#get new possible location
+			newDirection = (self.snake.direction + i)%4
+			if newDirection == directions['up']:
+				newloc = (self.snake.location[0],self.snake.location[1]-1)
+			elif newDirection == directions['down']:
+				newloc = (self.snake.location[0],self.snake.location[1]+1)
+			elif newDirection == directions['right']:
+				newloc = (self.snake.location[0]+1,self.snake.location[1])
+			elif newDirection == directions['left']:
+				newloc = (self.snake.location[0]-1,self.snake.location[1])
+				
+			#reject if location is outside board
+			if newloc[0] < 0 or newloc[0] > 19 or newloc[1] < 0 or newloc[1] > 13:
+				continue
+			
+			conflict = False
+			for n in self.snake.nodes:
+				if newloc == n.location:	
+					conflict = True
+					break
+			
+			if conflict:
+				continue
+			else:
+				for j in range(0,4):
+					
+					secondDir = (newDirection + j)%4
+					if secondDir == directions['up']:
+						secondloc = (newloc[0],newloc[1]-1)
+					elif secondDir == directions['down']:
+						secondloc = (newloc[0],newloc[1]+1)
+					elif secondDir == directions['right']:
+						secondloc = (newloc[0]+1,newloc[1])
+					elif secondDir == directions['left']:
+						secondloc = (newloc[0]-1,newloc[1])	
+						
+					if secondloc[0] < 0 or secondloc[0] > 19 or secondloc[1] < 0 or secondloc[1] > 13:
+						continue
 
-
+					if secondloc == newloc:
+						continue
+					
+					conflict = False
+					for n in self.snake.nodes:
+						if secondloc == n.location:	
+							conflict = True
+							break
+							
+					if conflict:
+						continue
+					else:
+					
+						self.expandLocations.append(newloc)
+						self.expandLocations.append(secondloc)
+						self.expandDirections.append(newDirection)
+						self.expandDirections.append(secondDir)
+						return True
+		return False
+		
 	def findNextOp(self):
 		for n in self.snake.nodes:
 			if n.value == "*":
@@ -792,6 +857,11 @@ class Game(spyral.scene.Scene):
 				newDirection = self.snake.direction
 				for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 					if event.type == pygame.KEYDOWN:
+						if event.key == pygame.K_e:
+							print self.findExpansion(),
+							print self.expandLocations,
+							print self.expandDirections,
+							print
 						if event.key == pygame.K_q:
 							spyral.director.pop()
 						if event.key == pygame.K_c and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:

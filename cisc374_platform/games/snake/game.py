@@ -234,7 +234,7 @@ class Snake(spyral.sprite.Sprite):
 			self.length = self.length+1
 
 class Game(spyral.scene.Scene):
-	def __init__(self, colorInt):
+	def __init__(self, snakeType, colorInt):
 		spyral.scene.Scene.__init__(self)
 
 		#Init Images
@@ -242,11 +242,11 @@ class Game(spyral.scene.Scene):
 		size = 60
 		for direction in range(4):
 			bodyImageString = 'body' + directionChars[direction]
-			url = "Images/Adder/"+ str(size) +"/"+ str(colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
+			url = "Images/" + str(snakeType) + "/"+ str(size) +"/"+ str(colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
 			images[bodyImageString] = pygame.image.load(url)
 			for frame in range(7):
 				headImageString= 'head' + str(frame) + directionChars[direction]
-				url = "Images/Adder/"+ str(size) +"/"+ str(colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
+				url = "Images/" + str(snakeType) + "/" + str(size) +"/"+ str(colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
 				images[headImageString] = pygame.image.load(url)
 
 		for apple in range(2):
@@ -258,8 +258,7 @@ class Game(spyral.scene.Scene):
 		self.root_camera = spyral.director.get_camera()
 		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))		
 		self.group = spyral.sprite.Group(self.camera)
-		background = spyral.util.new_surface((WIDTH,HEIGHT))
-		background.fill(colors['background'])
+		background = pygame.image.load("Images/Other/Background.png")
 		self.camera.set_background(background)
 		self.goal = 15
 		self.snake = Snake()
@@ -1010,7 +1009,7 @@ def launch():
 	#images['head'].fill(colors['head'])
 	scale_graphics()
 
-	spyral.director.push(Game(2))
+	spyral.director.push(Game("Anaconda" , 0))
 	pygame.event.set_allowed(None)
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)

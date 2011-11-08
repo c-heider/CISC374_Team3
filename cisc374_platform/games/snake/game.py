@@ -258,7 +258,7 @@ class Game(spyral.scene.Scene):
 		self.root_camera = spyral.director.get_camera()
 		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))		
 		self.group = spyral.sprite.Group(self.camera)
-		background = pygame.image.load("Images/Other/Background.png")
+		background = pygame.image.load("Images/Other/background.png")
 		self.camera.set_background(background)
 		self.goal = 15
 		self.snake = Snake()

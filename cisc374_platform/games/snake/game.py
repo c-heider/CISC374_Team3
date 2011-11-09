@@ -213,8 +213,6 @@ class Snake(spyral.sprite.Sprite):
 		self.oldLocation = self.location
 		self.nodes = []
 		self._set_layer('head')
-		self.clearing = False
-		self.collapsing = False
 		self.length = 0
 		self.direction = directions['right']
 		self.image = images['head' + str(0) + directionChars[self.direction]]
@@ -304,6 +302,10 @@ class Game(spyral.scene.Scene):
 		self.group.add(self.snake)
 		self.expandLocations = []
 		self.expandDirections = []
+		self.expanding = False
+		self.expandIndex = 0
+		self.oldFrac = None
+		self.newInt = 0
 		pygame.event.set_allowed(None)
 		pygame.event.set_allowed(pygame.KEYDOWN)
 		pygame.event.set_allowed(pygame.KEYUP)
@@ -425,6 +427,66 @@ class Game(spyral.scene.Scene):
 			return float(self.collapseNodes[0].value/self.collapseNodes[2].value)
 		elif self.collapseNodes[1].value == "*":
 			return (self.collapseNodes[0].value*self.collapseNodes[2].value)
+			
+	def expand(self):
+		if self.expandIndex == 0:
+			if self.findExpansion() == False:
+				self.expanding = False
+				return
+			self.oldFrac = fractions.Fraction(self.snake.nodes[0].value,self.snake.nodes[2].value)
+			newFrac = fractions.Fraction(self.oldFrac.numerator%self.oldFrac.denominator,self.oldFrac.denominator)
+			tempFrac = self.oldFrac - newFrac
+			self.newInt = tempFrac.numerator
+			newNum = SnakeNode(self.oldFrac.numerator%self.oldFrac.denominator)
+			newNum.location = self.snake.nodes[0].location
+			newNum.direction = self.snake.nodes[0].direction
+			newNum.oldLocation = self.snake.nodes[0].location
+			self.snake.nodes[0].kill()
+			self.snake.nodes.remove(self.snake.nodes[0])
+			self.snake.nodes.insert(0,newNum)
+			self.group.add(newNum)
+			newNum.render()
+			
+			newOp = SnakeNode("+")
+			newOp.location = self.snake.location
+			newOp.direction = self.snake.direction
+			newOp.oldLocation = self.snake.location
+			
+			self.snake.nodes.append(newOp)
+			self.group.add(newOp)
+			
+			self.snake.location = self.expandLocations[0]
+			self.snake.direction = self.expandDirections[0]
+			
+			self.snake.image = images['head0' + directionChars[self.snake.direction]]
+			
+			#newOp.render()
+			
+			self.expandIndex = 1
+			return
+			
+		elif self.expandIndex == 1:
+			newNode = SnakeNode(self.newInt)
+			newNode.location = self.snake.location
+			newNode.oldLocation = self.snake.location
+			newNode.direction = self.snake.direction 
+			
+			self.snake.nodes.append(newNode)
+			self.group.add(newNode)
+			
+			#newNode.render()
+			
+			self.snake.location = self.expandLocations[1]
+			self.snake.direction = self.expandDirections[1]
+			
+			self.snake.image = images['head0' + directionChars[self.snake.direction]]
+
+			
+			self.expandIndex = 0
+			self.expanding = False
+			return
+				
+			
 
 	def collapse(self):
 		if self.collapseIndex == 0:
@@ -708,6 +770,8 @@ class Game(spyral.scene.Scene):
 				self.collapseIndex = 0
 				return
 				
+
+	
 				
 	def render(self):
 		self.group.draw()
@@ -728,7 +792,7 @@ class Game(spyral.scene.Scene):
 			self.count += 1
 			self.count %= TICKS_PER_MOVE		
 
-			if self.count == 0 and self.collapsing == False:
+			if self.count == 0 and (self.collapsing == False and self.expanding == False):
 				if self.snake.location != self.snake.oldLocation:
 					self.snake.render()
 
@@ -741,10 +805,12 @@ class Game(spyral.scene.Scene):
 				for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 					if event.type == pygame.KEYDOWN:
 						if event.key == pygame.K_e:
-							print self.findExpansion(),
-							print self.expandLocations,
-							print self.expandDirections,
-							print
+							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"
+									and (self.snake.nodes[0].value%self.snake.nodes[2].value != 0 and 
+									fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1) and
+									math.fabs(self.snake.nodes[0].value) > self.snake.nodes[2].value):
+								self.expanding = True
+								return
 						if event.key == pygame.K_q:
 							spyral.director.pop()
 						if event.key == pygame.K_c and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
@@ -900,12 +966,16 @@ class Game(spyral.scene.Scene):
 						return		
 
 			#if we're in a collapse, collapse the next operator
-			if self.collapsing and self.count == 0:
+			if (self.collapsing or self.expanding) and self.count == 0:
 				self.snake.render()
 				self.snake.oldLocation = self.snake.location
 				for n in self.snake.nodes:
 					n.oldLocation = n.location
-				self.collapse()
+				if self.collapsing:
+					self.collapse()
+				elif self.expanding:
+					self.expand()
+
 
 			#break out of the collapse when it's finished
 			if (self.collapsing and self.collapseIndex == 0 and self.count == 0 and 
@@ -941,7 +1011,6 @@ class Game(spyral.scene.Scene):
 			self.snake.image = images['head' + str(6) + directionChars[self.snake.direction]]
 			self.count += 1
 			self.count %= TICKS_PER_MOVE
-			self.snake.image = images['head' + str(6) + directionChars[self.snake.direction]]
 			if self.count == 0:
 				n = self.snake.nodes[0]
 				n.kill()
@@ -951,13 +1020,6 @@ class Game(spyral.scene.Scene):
 				self.snake.lastType = 'Operator'
 			return
 
-
-		#drawing order
-		# for i in range(0,len(self.snake.nodes)):
-			# self.snake.nodes[i].kill()
-			# self.group.add(self.snake.nodes[i])
-			# self.snake.kill()
-			# self.group.add(self.snake)
 
 def scale_graphics():
 

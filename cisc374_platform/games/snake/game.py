@@ -249,26 +249,30 @@ class Game(spyral.scene.Scene):
 		spyral.scene.Scene.__init__(self)
 
 		#Init Images
-		colorInt = colorInt
+		self.colorInt = colorInt
+		self.snakeType = snakeType
+
+		self.clock.ticks_per_second = TICKS_PER_SECOND
+		self.root_camera = spyral.director.get_camera()
+		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT),layers=['other','food','operatorNodes','numberNodes','head'])		
+		self.group = spyral.sprite.Group(self.camera)
+		
+		
+	def on_enter(self):
 		size = 60
 		for direction in range(4):
 			bodyImageString = 'body' + directionChars[direction]
-			url = "Images/" + str(snakeType) + "/"+ str(size) +"/"+ str(colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
+			url = "Images/" + str(self.snakeType) + "/"+ str(size) +"/"+ str(self.colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
 			images[bodyImageString] = pygame.image.load(url)
 			for frame in range(7):
 				headImageString= 'head' + str(frame) + directionChars[direction]
-				url = "Images/" + str(snakeType) + "/" + str(size) +"/"+ str(colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
+				url = "Images/" + str(self.snakeType) + "/" + str(size) +"/"+ str(self.colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
 				images[headImageString] = pygame.image.load(url)
 
 		for apple in range(2):
 			url = "Images/Other/Apple"+str(apple)+".png"
 			images['Apple'+str(apple)] = pygame.image.load(url)
 
-		
-		self.clock.ticks_per_second = TICKS_PER_SECOND
-		self.root_camera = spyral.director.get_camera()
-		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT),layers=['other','food','operatorNodes','numberNodes','head'])		
-		self.group = spyral.sprite.Group(self.camera)
 		background = pygame.image.load("Images/Other/background.png")
 		self.camera.set_background(background)
 		self.goal = 15
@@ -300,6 +304,15 @@ class Game(spyral.scene.Scene):
 		self.group.add(self.snake)
 		self.expandLocations = []
 		self.expandDirections = []
+		pygame.event.set_allowed(None)
+		pygame.event.set_allowed(pygame.KEYDOWN)
+		pygame.event.set_allowed(pygame.KEYUP)
+		pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
+		pygame.mouse.set_visible(False)
+	
+	def on_exit(self):
+		pygame.mouse.set_visible(True)
+		pygame.event.set_blocked(None)
 		
 	#get two empty spaces and corresponding directions for expansion. Return False if such do not exist
 	def findExpansion(self):
@@ -1021,7 +1034,4 @@ def launch():
 	scale_graphics()
 
 	spyral.director.push(Game("Anaconda" , 0))
-	pygame.event.set_allowed(None)
-	pygame.event.set_allowed(pygame.KEYDOWN)
-	pygame.event.set_allowed(pygame.KEYUP)
-	pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
+

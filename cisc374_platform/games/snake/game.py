@@ -256,22 +256,21 @@ class Game(spyral.scene.Scene):
 		
 		
 	def on_enter(self):
+ 		self.camera.set_background(images['background'])
 		size = 60
 		for direction in range(4):
 			bodyImageString = 'body' + directionChars[direction]
 			url = "Images/" + str(self.snakeType) + "/"+ str(size) +"/"+ str(self.colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
-			images[bodyImageString] = pygame.image.load(url)
+			images[bodyImageString] = spyral.util.load_image(url)
 			for frame in range(7):
 				headImageString= 'head' + str(frame) + directionChars[direction]
 				url = "Images/" + str(self.snakeType) + "/" + str(size) +"/"+ str(self.colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
-				images[headImageString] = pygame.image.load(url)
+				images[headImageString] = spyral.util.load_image(url)
 
 		for apple in range(2):
 			url = "Images/Other/Apple"+str(apple)+".png"
-			images['Apple'+str(apple)] = pygame.image.load(url)
+			images['Apple'+str(apple)] = spyral.util.load_image(url)
 
-		background = pygame.image.load("Images/Other/background.png")
-		self.camera.set_background(background)
 		self.goal = 15
 		self.snake = Snake()
 		self.foodItems = [Operator([],[],self.snake.location)]
@@ -1022,10 +1021,8 @@ class Game(spyral.scene.Scene):
 
 
 
-def launch():
-	spyral.init()
-
-
+def init():
+	
 	colors['background'] = (222, 152, 254)
 	colors['head'] = (255,255,255)
 	colors['node'] = (255,255,255)
@@ -1034,14 +1031,48 @@ def launch():
 	colors['operator'] = (255,255,255)
 	colors['length'] = (0,0,0)
 	colors['expression'] = (255,0,0)
-	colors['character_name'] = (0,0,0)
+	
+	colors['menu_start'] = (255,255,255)
+	colors['menu_character'] = (231,237,26)
+	colors['menu_unlock'] = (231,237,26)
+	colors['menu_quit'] = (184,144,21)
+	colors['menu_text_hightlight'] = (255,0,0)
+	
+	colors['character_unlock'] = (231,237,26)
+	colors['character_back'] = (184,144,21)
+	colors['character_name'] = (255,255,255)
+	colors['character_color'] = (0,0,0)
+	
+	strings['characters'] = ["< Adder Adam >", "< Boa Benny >", "< Cobra Carl >",
+	                         "< Python Perry >", "< Rattler Rebecca >", "< Sam Salamander >"]
+	
+	images['background'] = spyral.util.load_image(path.join('Images/Other', 'background.png'))
+	images['menu_background'] = spyral.util.load_image(path.join('Images/Other', 'menu_bg.png'))
+	
+	images['menu_title'] = spyral.util.load_image(path.join('Images/Other', 'menu_title.png'))
+	images['character_title'] = spyral.util.load_image(path.join('Images/Other', 'character_title.png'))
+	images['button_normal'] = spyral.util.load_image(path.join('Images/Other', 'Button0.png'))
+	images['button_highlight'] = spyral.util.load_image(path.join('Images/Other', 'Button2.png'))
+	images['color_select'] = spyral.util.load_image(path.join('Images/Other', 'color_select.png'))
 
-	fonts['character_name'] = pygame.font.SysFont(None, BLOCK_SIZE)
+	images['characters'] = []
+	for i in range(3):
+		images['characters'].append(spyral.util.load_image(path.join('Images/Adder/CharSelect', '%d.png' % i)))
+	
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['length'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['expression'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
+	
+	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
+	fonts['menu_character'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
+	fonts['menu_unlock'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 3)
+	fonts['menu_quit'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
+	fonts['character_unlock'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 4)
+	fonts['character_back'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
+	fonts['character_name'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
+	fonts['character_color'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
 
 	geom['lengthx'] = WIDTH - BLOCK_SIZE*2
 	geom['expressionx'] = 0
@@ -1052,31 +1083,27 @@ def launch():
 	geom['menu_character'] = pygame.Rect(300, 325, 200, 70)
 	geom['menu_unlock'] = pygame.Rect(24, 518, 210, 54)
 	geom['menu_quit'] = pygame.Rect(684, 542, 85, 28)
+		 
+	geom['menu_title_y'] = HEIGHT / 6
+	geom['menu_start_y'] = HEIGHT / 2 - images['button_normal'].get_height()/2
+	geom['menu_character_y'] = geom['menu_start_y'] + images['button_normal'].get_height()
+	geom['menu_unlock_x'] = WIDTH * 2/100
+	geom['menu_unlock_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
+	geom['menu_quit_x'] = WIDTH - WIDTH * 2/100
+	geom['menu_quit_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
 	
-	 
-	# Geometry for the Character Select scene
-	geom['character_prev'] = pygame.Rect(240, 170, 34, 56)
-	geom['character_next'] = pygame.Rect(525, 170, 34, 56)
-	geom['character_colors'] = [pygame.Rect(230, 392, 46, 46),
-                               pygame.Rect(284, 392, 46, 46),
-                               pygame.Rect(338, 392, 46, 46),
-                               pygame.Rect(392, 392, 46, 46),
-                               pygame.Rect(446, 392, 46, 46),
-                               pygame.Rect(500, 392, 46, 46)]
-	geom['character_back'] = pygame.Rect(680, 538, 70, 24)
-	geom['character_center'] = (342, 200)
-	geom['character_name_center'] = (400, 280)
+	geom['character_title_y'] = HEIGHT / 6
+	geom['character_unlock_x'] = WIDTH * 2/100
+	geom['character_unlock_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
+	geom['character_back_x'] = WIDTH - WIDTH * 2/100
+	geom['character_back_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
+	geom['character_name_y'] = HEIGHT/2
+	geom['character_image_y'] = HEIGHT/2 - 3*images['characters'][0].get_height()/4
+	geom['character_color_y'] = HEIGHT/2 + images['button_normal'].get_height()/2
+	geom['character_color_select_y'] = geom['character_color_y'] + images['color_select'].get_height()
 
-	strings['characters'] = ["Adder Adam", "Boa Benny", "Cobra Carl",
-                             "Python Perry", "Rattler Rebecca", "Sam Salamander"]
-						 
-	images['background'] = spyral.util.load_image(path.join('Images/Other', 'background.png'))
-	images['menu'] = spyral.util.load_image(path.join('Images/Other', 'menu.png'))
-	images['character_select'] = spyral.util.load_image(path.join('Images/Other', 'character_select.png'))
+	
 
 	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])
-	scale_graphics()
-
-	spyral.director.push(Game("Anaconda" , 0))
 

@@ -147,7 +147,7 @@ class Operator(spyral.sprite.Sprite):
 		self.image = images['Apple1'].copy()
 		self.image.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
 #		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
-		self.rect.center = (self.location[0]*BLOCK_SIZE + (BLOCK_SIZE - APPLE_D) /2,self.location[1]*BLOCK_SIZE + (BLOCK_SIZE - APPLE_D)/2)
+		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
 class Number(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):

@@ -10,7 +10,6 @@ TICKS_PER_SECOND = 15
 TICKS_PER_MOVE = TICKS_PER_SECOND/MOVES_PER_SECOND
 HEIGHT = 900
 WIDTH = 1200
-SCALE = 1.5
 BLOCK_SIZE = 60
 APPLE_SIZE = 40
 APPLE_D = BLOCK_SIZE - APPLE_SIZE
@@ -1021,22 +1020,6 @@ class Game(spyral.scene.Scene):
 			return
 
 
-def scale_graphics():
-
-	# scale images
-	for k in ('background', 'menu', 'character_select'):
-		v = images[k]
-		w, h = v.get_size()
-		images[k] = pygame.transform.smoothscale(v, (int(w*SCALE), int(h*SCALE)))
-  
-	# scale geom
-	for k, r in geom.items():
-		if isinstance(r, pygame.Rect):
-			geom[k] = pygame.Rect(r.left * SCALE, r.top * SCALE, 
-								r.width * SCALE, r.height * SCALE)
-				
-		elif isinstance(r, tuple):
-			geom[k] = tuple([i*SCALE for i in r])
 
 
 def launch():

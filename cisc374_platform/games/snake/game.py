@@ -310,10 +310,7 @@ class Game(spyral.scene.Scene):
 		pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
 		pygame.mouse.set_visible(False)
 	
-	def on_exit(self):
-		pygame.mouse.set_visible(True)
-		pygame.event.set_blocked(None)
-		
+			
 	#get two empty spaces and corresponding directions for expansion. Return False if such do not exist
 	def findExpansion(self):
 		self.expandLocations = []

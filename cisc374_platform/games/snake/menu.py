@@ -109,6 +109,27 @@ class Button(spyral.sprite.Sprite):
     def focus(self, focus=True):
         self.highlight = focus
         self.render()
+        
+class ImageButton(spyral.sprite.Sprite):
+    
+    def __init__(self, pos, images):
+        spyral.sprite.Sprite.__init__(self)
+
+        self.images = images
+        self.highlight = False 
+
+        self.render()
+        self.rect.center = pos
+        
+    def render(self):
+        if self.highlight:
+            self.image = self.images[1]
+        else:
+            self.image = self.images[0]
+        
+    def focus(self, focus=True):
+        self.highlight = focus
+        self.render()
 
 class Menu(spyral.scene.Scene):
     """Menu Scene shows the game title, buttons to start game, select
@@ -125,32 +146,23 @@ class Menu(spyral.scene.Scene):
         
         center_x = self.camera.get_rect().centerx
         
-        # game title sprite
-        title = spyral.sprite.Sprite()
-        title.image = images['menu_title']
-        title.rect.center = (center_x, geom['menu_title_y'])
-        
         # start button
-        start = Button((center_x, geom['menu_start_y']), "START", 
-                        fonts['menu_start'], colors['menu_start'])
+        start = ImageButton((center_x, geom['menu_start_y']),
+                            images['button_start'])
         
         # character select button
-        character = Button((center_x, geom['menu_character_y']), "Character\nSelect",
-                           fonts['menu_character'], colors['menu_character'])
-        
-        # achievements/unlock button
-        unlock = Text((geom['menu_unlock_x'], geom['menu_unlock_y']), "Achievements\nUnlocks",
-                      fonts['menu_unlock'], colors['menu_unlock'])
+        character = ImageButton((center_x, geom['menu_character_y']),
+                                images['button_charselect'])
         
         # quit button
-        quit = Text((geom['menu_quit_x'], geom['menu_quit_y']), "QUIT",
-                    fonts['menu_quit'], colors['menu_quit'], 'right')
+        quit = ImageButton((center_x, geom['menu_quit_y']),
+                           images['button_quit'])
         
-        self.buttons = [start, character, unlock, quit]
+        self.buttons = [start, character, quit]
         self.selected_button = 0
         self.buttons[self.selected_button].focus()
         
-        self.group.add(title, start, character, unlock, quit)
+        self.group.add(start, character, quit)
 
     def render(self):
         """Render the current scene"""
@@ -185,12 +197,6 @@ class Menu(spyral.scene.Scene):
                         spyral.director.push(CharacterSelect())
                         
                     elif self.selected_button == 2:
-                        # Achievements/Unlocks button clicked
-                        # move to Achievements scene
-                        #spyral.director.push(Achievements())
-                        pass
-                    
-                    elif self.selected_button == 3:
                         # Quit button clicked
                         exit(0)
         pygame.event.clear()
@@ -229,9 +235,9 @@ class CharacterSelect(spyral.scene.Scene):
         center_x = self.camera.get_rect().centerx
 
         # title sprite
-        title = spyral.sprite.Sprite()
-        title.image = images['character_title']
-        title.rect.center = (center_x, geom['character_title_y'])
+#        title = spyral.sprite.Sprite()
+#        title.image = images['character_title']
+#        title.rect.center = (center_x, geom['character_title_y'])
         
         # character name
         self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][0],
@@ -245,23 +251,22 @@ class CharacterSelect(spyral.scene.Scene):
         self.selected_color = 0
         self.color_select = ColorSelect((center_x, geom['character_color_select_y']))
         
-        # quit button
+        # back button
         back = Text((geom['character_back_x'], geom['character_back_y']), "BACK",
-                    fonts['character_back'], colors['character_back'], 'right')
+                    fonts['character_back'], colors['character_back'], 'left')
         
         
         # achievements/unlock
-        unlock = Text((geom['character_unlock_x'], geom['character_unlock_y']), 
-                      "Players select different\ncharacters, unlocked\nwith achievements",
-                      fonts['character_unlock'], colors['character_unlock'])
+#        unlock = Text((geom['character_unlock_x'], geom['character_unlock_y']), 
+#                      "Players select different\ncharacters, unlocked\nwith achievements",
+#                      fonts['character_unlock'], colors['character_unlock'])
 
         self.buttons = [self.character_name, self.character_color, back]
         self.selected_button = 0
         self.buttons[self.selected_button].focus()
         
-        self.group.add(title, self.character_name, self.character, 
-                       self.character_color, self.color_select, 
-                       unlock, back)
+        self.group.add(self.character_name, self.character, 
+                       self.character_color, self.color_select, back)
 
     def on_enter(self):
         self.camera.set_background(images['menu_background'])

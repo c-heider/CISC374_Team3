@@ -1033,7 +1033,7 @@ def init():
 	colors['menu_character'] = (231,237,26)
 	colors['menu_unlock'] = (231,237,26)
 	colors['menu_quit'] = (184,144,21)
-	colors['menu_text_hightlight'] = (255,0,0)
+	colors['menu_text_hightlight'] = (240,101,50)
 	
 	colors['character_unlock'] = (231,237,26)
 	colors['character_back'] = (184,144,21)
@@ -1044,13 +1044,20 @@ def init():
 	                         "< Python Perry >", "< Rattler Rebecca >", "< Sam Salamander >"]
 	
 	images['background'] = spyral.util.load_image(path.join('Images/Other', 'background.png'))
-	images['menu_background'] = spyral.util.load_image(path.join('Images/Other', 'menu_bg.png'))
+	images['menu_background'] = spyral.util.load_image(path.join('Images/Other', 'TitleScreen.png'))
 	
 	images['menu_title'] = spyral.util.load_image(path.join('Images/Other', 'menu_title.png'))
 	images['character_title'] = spyral.util.load_image(path.join('Images/Other', 'character_title.png'))
 	images['button_normal'] = spyral.util.load_image(path.join('Images/Other', 'Button0.png'))
 	images['button_highlight'] = spyral.util.load_image(path.join('Images/Other', 'Button2.png'))
 	images['color_select'] = spyral.util.load_image(path.join('Images/Other', 'color_select.png'))
+
+	images['button_start'] = (spyral.util.load_image(path.join('Images/Other/Buttons', 'Play0.png')),
+							  spyral.util.load_image(path.join('Images/Other/Buttons', 'Play1.png')))
+	images['button_charselect'] = (spyral.util.load_image(path.join('Images/Other/Buttons', 'CharSelect0.png')),
+							 	   spyral.util.load_image(path.join('Images/Other/Buttons', 'CharSelect1.png')))
+	images['button_quit'] = (spyral.util.load_image(path.join('Images/Other/Buttons', 'Quit0.png')),
+						     spyral.util.load_image(path.join('Images/Other/Buttons', 'Quit1.png')))
 
 	images['characters'] = []
 	for i in range(3):
@@ -1082,23 +1089,19 @@ def init():
 	geom['menu_quit'] = pygame.Rect(684, 542, 85, 28)
 		 
 	geom['menu_title_y'] = HEIGHT / 6
-	geom['menu_start_y'] = HEIGHT / 2 - images['button_normal'].get_height()/2
-	geom['menu_character_y'] = geom['menu_start_y'] + images['button_normal'].get_height()
-	geom['menu_unlock_x'] = WIDTH * 2/100
-	geom['menu_unlock_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
-	geom['menu_quit_x'] = WIDTH - WIDTH * 2/100
-	geom['menu_quit_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
+	geom['menu_start_y'] = HEIGHT / 2 - images['button_start'][0].get_height()/8
+	geom['menu_character_y'] = geom['menu_start_y'] + images['button_start'][0].get_height()
+	geom['menu_quit_y'] = geom['menu_character_y'] + images['button_charselect'][0].get_height()
 	
 	geom['character_title_y'] = HEIGHT / 6
 	geom['character_unlock_x'] = WIDTH * 2/100
 	geom['character_unlock_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
-	geom['character_back_x'] = WIDTH - WIDTH * 2/100
-	geom['character_back_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
-	geom['character_name_y'] = HEIGHT/2
-	geom['character_image_y'] = HEIGHT/2 - 3*images['characters'][0].get_height()/4
-	geom['character_color_y'] = HEIGHT/2 + images['button_normal'].get_height()/2
+	geom['character_back_x'] = 40
+	geom['character_back_y'] = geom['menu_quit_y']
+	geom['character_image_y'] = HEIGHT/2
+	geom['character_name_y'] = HEIGHT/2 + 3*images['characters'][0].get_height()/4
+	geom['character_color_y'] = geom['character_name_y'] + images['button_normal'].get_height()/2
 	geom['character_color_select_y'] = geom['character_color_y'] + images['color_select'].get_height()
-
 	
 
 	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")

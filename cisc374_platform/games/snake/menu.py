@@ -1,5 +1,6 @@
 import pygame
 import spyral
+import player
 from game import *
 
 class Text(spyral.sprite.Sprite):
@@ -135,14 +136,15 @@ class Menu(spyral.scene.Scene):
     """Menu Scene shows the game title, buttons to start game, select
     characters or view achievements."""
         
-    def __init__(self):
+    def __init__(self,player):
         """Construct the Menu scene"""
         spyral.scene.Scene.__init__(self)
         
         self.root_camera = spyral.director.get_camera()
         self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))    
         self.group = spyral.sprite.Group(self.camera)
-        
+        self.player = player
+
         center_x = self.camera.get_rect().centerx
         
         # start button
@@ -191,12 +193,12 @@ class Menu(spyral.scene.Scene):
                     if self.selected_button == 0:
                         # Start button clicked
                         # move to Game scene
-                        spyral.director.push(Game("Anaconda" , 0))
+                        spyral.director.push(Game(self.player.name, self.player.color))
                     
                     elif self.selected_button == 1:
                         # Character Select button clicked 
                         # move to CharacterSelect scene
-                        spyral.director.push(CharacterSelect())
+                        spyral.director.push(CharacterSelect(self.player))
                         
                     elif self.selected_button == 2:
                         # Quit button clicked
@@ -205,13 +207,13 @@ class Menu(spyral.scene.Scene):
 
 class Character(spyral.sprite.Sprite):
     
-    def __init__(self, center, character):
+    def __init__(self, center, character,color):
         spyral.sprite.Sprite.__init__(self)
-        self.set_character(character)
+        self.set_character(character,color)
         self.rect.center = center
             
-    def set_character(self, character):
-        self.image = images['characters'][character]
+    def set_character(self, character, color):
+        self.image = images['characters'][character][color]
     
 
 class ColorSelect(spyral.sprite.Sprite):
@@ -223,7 +225,7 @@ class ColorSelect(spyral.sprite.Sprite):
 
 class CharacterSelect(spyral.scene.Scene):
         
-    def __init__(self):
+    def __init__(self,player):
         """Construct the Menu scene which shows the game title and 
         instructions."""
         
@@ -233,6 +235,7 @@ class CharacterSelect(spyral.scene.Scene):
         self.root_camera = spyral.director.get_camera()
         self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))    
         self.group = spyral.sprite.Group(self.camera)
+        self.player = player
         
         center_x = self.camera.get_rect().centerx
 
@@ -243,19 +246,19 @@ class CharacterSelect(spyral.scene.Scene):
         
         # character name
         self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][0],
-                    fonts['character_name'], colors['character_name'], 'center')
+                    fonts['character_name'], colors['character_color'], 'center')
         self.selected_character = 0
-        self.character = Character((center_x, geom['character_image_y']), 0)
+        self.character = Character((center_x, geom['character_image_y']), 0,0)
 
         # select color
         self.character_color = Text((center_x, geom['character_color_y']), "Color Select",
                      fonts['character_color'], colors['character_color'], 'center')
-        self.selected_color = 0
-        self.color_select = ColorSelect((center_x, geom['character_color_select_y']))
+        self.selected_color = self.player.color
+        #self.color_select = ColorSelect((center_x, geom['character_color_select_y']))
         
         # back button
-        back = Text((geom['character_back_x'], geom['character_back_y']), "BACK",
-                    fonts['character_back'], colors['character_back'], 'left')
+        #back = Text((geom['character_back_x'], geom['character_back_y']), "BACK",
+                    #fonts['character_back'], colors['character_back'], 'left')
         
         
         # achievements/unlock
@@ -263,12 +266,12 @@ class CharacterSelect(spyral.scene.Scene):
 #                      "Players select different\ncharacters, unlocked\nwith achievements",
 #                      fonts['character_unlock'], colors['character_unlock'])
 
-        self.buttons = [self.character_name, self.character_color, back]
+        self.buttons = [self.character_name, self.character_color]
         self.selected_button = 0
         self.buttons[self.selected_button].focus()
         
         self.group.add(self.character_name, self.character, 
-                       self.character_color, self.color_select, back)
+                       self.character_color)
 
     def on_enter(self):
         self.camera.set_background(images['menu_background'])
@@ -298,41 +301,44 @@ class CharacterSelect(spyral.scene.Scene):
                 elif event.key == pygame.K_LEFT:
                     if self.selected_button == 0:
                         # change character
-                        self.selected_character = (self.selected_character - 1) % len(strings['characters'])
+                        self.selected_character = (self.selected_character - 1) % len(strings['char_sources'])
                         self.character_name.set_label(strings['characters'][self.selected_character])
                         self.character_name.focus()
                         
-                        self.character.set_character(self.selected_character % len(images['characters']));
+                        self.player.changeName(strings['char_sources'][self.selected_character])
+                        self.player.changeColor(0)
+                        self.character.set_character((self.selected_character % len(images['characters'])), self.player.color)
                     
                     elif self.selected_button == 1:
                         # change color
-                        pass
+                        self.player.changeColor((self.player.color - 1) % geom['total_colors'])
+                        self.character.set_character((self.selected_character % len(images['characters'])), self.player.color)
                 
                 elif event.key == pygame.K_RIGHT:
                     if self.selected_button == 0:
                         # change character
-                        self.selected_character = (self.selected_character + 1) % len(strings['characters'])
+                        self.selected_character = (self.selected_character + 1) % len(strings['char_sources'])
                         self.character_name.set_label(strings['characters'][self.selected_character])
                         self.character_name.focus()
                         
-                        self.character.set_character(self.selected_character % len(images['characters']));
+                        self.player.changeName((strings['char_sources'][self.selected_character]))
+                        self.player.changeColor(0)
+                        self.character.set_character((self.selected_character % len(images['characters'])), self.player.color)
                         
                     elif self.selected_button == 1:
                         # change color
-                        pass
+                        self.player.changeColor((self.player.color + 1) % geom['total_colors'])
+                        self.character.set_character((self.selected_character % len(images['characters'])), self.player.color)
                     
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
-                    if self.selected_button == 2:
-                        # Back button clicked
-                        spyral.director.pop()
+                    spyral.director.pop()
         pygame.event.clear()
 
 def launch():
     spyral.init()
 
     init()
-    
-    spyral.director.push(Menu())
+    spyral.director.push(Menu(player.Player()))
     
     pygame.event.set_allowed(None)
     pygame.event.set_allowed(pygame.KEYDOWN)

@@ -142,7 +142,6 @@ class Menu(spyral.scene.Scene):
         self.root_camera = spyral.director.get_camera()
         self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))    
         self.group = spyral.sprite.Group(self.camera)
-        self.camera.set_background(images['menu_background'])
         
         center_x = self.camera.get_rect().centerx
         
@@ -163,6 +162,9 @@ class Menu(spyral.scene.Scene):
         self.buttons[self.selected_button].focus()
         
         self.group.add(start, character, quit)
+
+    def on_enter(self):
+        self.camera.set_background(images['menu_background'])
 
     def render(self):
         """Render the current scene"""

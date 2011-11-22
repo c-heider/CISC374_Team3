@@ -260,15 +260,15 @@ class Game(spyral.scene.Scene):
 		size = 60
 		for direction in range(4):
 			bodyImageString = 'body' + directionChars[direction]
-			url = "Images/" + str(self.snakeType) + "/"+ str(size) +"/"+ str(self.colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
+			url = "games/snake/Images/" + str(self.snakeType) + "/"+ str(size) +"/"+ str(self.colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
 			images[bodyImageString] = spyral.util.load_image(url)
 			for frame in range(7):
 				headImageString= 'head' + str(frame) + directionChars[direction]
-				url = "Images/" + str(self.snakeType) + "/" + str(size) +"/"+ str(self.colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
+				url = "games/snake/Images/" + str(self.snakeType) + "/" + str(size) +"/"+ str(self.colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
 				images[headImageString] = spyral.util.load_image(url)
 
 		for apple in range(2):
-			url = "Images/Other/Apple"+str(apple)+".png"
+			url = "games/snake/Images/Other/Apple"+str(apple)+".png"
 			images['Apple'+str(apple)] = spyral.util.load_image(url)
 
 		self.goal = 15
@@ -1043,25 +1043,25 @@ def init():
 	strings['characters'] = ["< Adder Adam >", "< Boa Benny >", "< Cobra Carl >",
 	                         "< Python Perry >", "< Rattler Rebecca >", "< Sam Salamander >"]
 	
-	images['background'] = spyral.util.load_image(path.join('Images/Other', 'background.png'))
-	images['menu_background'] = spyral.util.load_image(path.join('Images/Other', 'TitleScreen.png'))
+	images['background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'background.png'))
+	images['menu_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen.png'))
 	
-	images['menu_title'] = spyral.util.load_image(path.join('Images/Other', 'menu_title.png'))
-	images['character_title'] = spyral.util.load_image(path.join('Images/Other', 'character_title.png'))
-	images['button_normal'] = spyral.util.load_image(path.join('Images/Other', 'Button0.png'))
-	images['button_highlight'] = spyral.util.load_image(path.join('Images/Other', 'Button2.png'))
-	images['color_select'] = spyral.util.load_image(path.join('Images/Other', 'color_select.png'))
+	images['menu_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'menu_title.png'))
+	images['character_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'character_title.png'))
+	images['button_normal'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'Button0.png'))
+	images['button_highlight'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'Button2.png'))
+	images['color_select'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'color_select.png'))
 
-	images['button_start'] = (spyral.util.load_image(path.join('Images/Other/Buttons', 'Play0.png')),
-							  spyral.util.load_image(path.join('Images/Other/Buttons', 'Play1.png')))
-	images['button_charselect'] = (spyral.util.load_image(path.join('Images/Other/Buttons', 'CharSelect0.png')),
-							 	   spyral.util.load_image(path.join('Images/Other/Buttons', 'CharSelect1.png')))
-	images['button_quit'] = (spyral.util.load_image(path.join('Images/Other/Buttons', 'Quit0.png')),
-						     spyral.util.load_image(path.join('Images/Other/Buttons', 'Quit1.png')))
+	images['button_start'] = (spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Play0.png')),
+							  spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Play1.png')))
+	images['button_charselect'] = (spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'CharSelect0.png')),
+							 	   spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'CharSelect1.png')))
+	images['button_quit'] = (spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Quit0.png')),
+						     spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Quit1.png')))
 
 	images['characters'] = []
 	for i in range(3):
-		images['characters'].append(spyral.util.load_image(path.join('Images/Adder/CharSelect', '%d.png' % i)))
+		images['characters'].append(spyral.util.load_image(path.join('games/snake/Images/Adder/CharSelect', '%d.png' % i)))
 	
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
@@ -1104,6 +1104,6 @@ def init():
 	geom['character_color_select_y'] = geom['character_color_y'] + images['color_select'].get_height()
 	
 
-	#images['head'] = pygame.image.load("Images/Adder/Adder_Head_E0.png")
+	#images['head'] = pygame.image.load("games/snake/Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])
 

@@ -1040,8 +1040,8 @@ def init():
 	colors['character_name'] = (255,255,255)
 	colors['character_color'] = (0,0,0)
 	
-	strings['characters'] = ["< Adder Adam >", "< Boa Benny >", "< Cobra Carl >",
-	                         "< Python Perry >", "< Rattler Rebecca >", "< Sam Salamander >"]
+	strings['characters'] = ["< Adder Adam >", "< Sal Amander >", "< Darryl Diamondback >"]
+	strings['char_sources'] = ["Adder","Anaconda","Diamondback"]
 	
 	images['background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'background.png'))
 	images['menu_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen.png'))
@@ -1058,10 +1058,21 @@ def init():
 							 	   spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'CharSelect1.png')))
 	images['button_quit'] = (spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Quit0.png')),
 						     spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Quit1.png')))
-
-	images['characters'] = []
+	
+	
+	images['adderColors'] = []
 	for i in range(3):
-		images['characters'].append(spyral.util.load_image(path.join('games/snake/Images/Adder/CharSelect', '%d.png' % i)))
+		images['adderColors'].append(spyral.util.load_image(path.join('games/snake/Images/Adder/CharSelect', '%d.png' % i)))
+	
+	images['condaColors'] = []
+	for i in range(3):
+		images['condaColors'].append(spyral.util.load_image(path.join('games/snake/Images/Anaconda/CharSelect', '%d.png' % i)))
+	
+	images['diamondColors'] = []
+	for i in range(3):
+		images['diamondColors'].append(spyral.util.load_image('games/snake/Images/Diamondback/CharSelect/0.png'))
+	
+	images['characters'] = [images['adderColors'],images['condaColors'],images['diamondColors']]
 	
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
@@ -1099,9 +1110,11 @@ def init():
 	geom['character_back_x'] = 40
 	geom['character_back_y'] = geom['menu_quit_y']
 	geom['character_image_y'] = HEIGHT/2
-	geom['character_name_y'] = HEIGHT/2 + 3*images['characters'][0].get_height()/4
+	geom['character_name_y'] = HEIGHT/2 + 3*images['characters'][0][0].get_height()/4
 	geom['character_color_y'] = geom['character_name_y'] + images['button_normal'].get_height()/2
 	geom['character_color_select_y'] = geom['character_color_y'] + images['color_select'].get_height()
+	
+	geom['total_colors'] = 3
 	
 
 	#images['head'] = pygame.image.load("games/snake/Images/Adder/Adder_Head_E0.png")

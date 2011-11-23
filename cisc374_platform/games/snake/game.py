@@ -1040,8 +1040,8 @@ def init():
 	colors['character_name'] = (255,255,255)
 	colors['character_color'] = (0,0,0)
 	
-	strings['characters'] = ["< Adder Adam >", "< Sal Amander >", "< Darryl Diamondback >"]
-	strings['char_sources'] = ["Adder","Anaconda","Diamondback"]
+	strings['characters'] = ["< Adder Adam >", "< Sal Amander >", "< Darryl Diamondback >", "< Colonel Caterpillar >"]
+	strings['char_sources'] = ["Adder","Anaconda","Diamondback","Caterpillar"]
 	
 	images['background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'background.png'))
 	images['menu_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen.png'))
@@ -1071,8 +1071,12 @@ def init():
 	images['diamondColors'] = []
 	for i in range(3):
 		images['diamondColors'].append(spyral.util.load_image('games/snake/Images/Diamondback/CharSelect/0.png'))
+
+	images['caterpillarColors'] = []
+	for i in range(3):
+		images['caterpillarColors'].append(spyral.util.load_image('games/snake/Images/Caterpillar/CharSelect/0.png'))
 	
-	images['characters'] = [images['adderColors'],images['condaColors'],images['diamondColors']]
+	images['characters'] = [images['adderColors'],images['condaColors'],images['diamondColors'],images['caterpillarColors']]
 	
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)

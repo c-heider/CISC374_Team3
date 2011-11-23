@@ -1090,8 +1090,8 @@ def init():
 	fonts['menu_quit'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
 	fonts['character_unlock'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 4)
 	fonts['character_back'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
-	fonts['character_name'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
-	fonts['character_color'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
+	fonts['character_name'] = pygame.font.Font('games/snake/MangaTemple.ttf',images['button_normal'].get_height() / 3)
+	fonts['character_color'] = pygame.font.Font('games/snake/MangaTemple.ttf',images['button_normal'].get_height() / 3)
 
 	geom['lengthx'] = WIDTH - BLOCK_SIZE*2
 	geom['expressionx'] = 0

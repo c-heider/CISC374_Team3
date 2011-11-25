@@ -1074,7 +1074,7 @@ def init():
 
 	images['caterpillarColors'] = []
 	for i in range(3):
-		images['caterpillarColors'].append(spyral.util.load_image('games/snake/Images/Caterpillar/CharSelect/0.png'))
+		images['caterpillarColors'].append(spyral.util.load_image('games/snake/Images/Caterpillar/CharSelect/'+str(i%2)+'.png'))
 	
 	images['characters'] = [images['adderColors'],images['condaColors'],images['diamondColors'],images['caterpillarColors']]
 	

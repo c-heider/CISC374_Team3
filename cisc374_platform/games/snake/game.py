@@ -144,10 +144,19 @@ class Operator(spyral.sprite.Sprite):
 		else:
 			self.val = operators[random.randrange(0,2,1)]
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
-		self.image = images['Apple1'].copy()
-		self.image.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
-#		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
+		self.image0 = images['Apple10'].copy()
+		self.image0.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
+		self.image1 = images['Apple11'].copy()
+		self.image1.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
+		self.image = self.image1
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+
+	def render(self, numNext):
+		if not numNext:
+			self.image = self.image0
+		else:
+			self.image = self.image1
+		
 
 class Number(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
@@ -156,10 +165,19 @@ class Number(spyral.sprite.Sprite):
 		self.location = openSpace(foodItems,snake,head)
 		self.val = random.randrange(1,15,1)
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
-		self.image = images['Apple0'].copy()
-		self.image.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
+		self.image0 = images['Apple00'].copy()
+		self.image0.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
+		self.image1 = images['Apple01'].copy()
+		self.image1.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
+		self.image = self.image0
 #		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
+
+	def render(self, numNext):
+		if numNext:
+			self.image = self.image0
+		else:
+			self.image = self.image1
 
 class SnakeNode(spyral.sprite.Sprite):
 	def __init__(self,val):
@@ -268,8 +286,9 @@ class Game(spyral.scene.Scene):
 				images[headImageString] = spyral.util.load_image(url)
 
 		for apple in range(2):
-			url = "games/snake/Images/Other/Apple"+str(apple)+".png"
-			images['Apple'+str(apple)] = spyral.util.load_image(url)
+			for clear in range(2):
+				url = "games/snake/Images/Other/Apple"+str(apple)+str(clear)+".png"
+				images['Apple'+str(apple)+str(clear)] = spyral.util.load_image(url)
 
 		self.goal = 15
 		self.snake = Snake()
@@ -782,6 +801,10 @@ class Game(spyral.scene.Scene):
 		#render the expression on the bottom
 		self.expression.findExpression(self.snake)
 		self.expression.render()
+
+		#render apples
+		for f in self.foodItems:
+			f.render(self.snake.lastType == 'Operator')
 
 		if self.eating == False and self.clearing == False:
 			self.count += 1

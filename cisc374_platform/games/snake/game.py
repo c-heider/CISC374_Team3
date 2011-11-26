@@ -151,11 +151,11 @@ class Operator(spyral.sprite.Sprite):
 		self.image = self.image1
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
-	def render(self, numNext):
-		if not numNext:
-			self.image = self.image0
-		else:
+	def render(self, numNext, divLastOp):
+		if numNext or (divLastOp and (self.val == '/' or self.val == '*')):
 			self.image = self.image1
+		else:
+			self.image = self.image0
 		
 
 class Number(spyral.sprite.Sprite):
@@ -173,7 +173,7 @@ class Number(spyral.sprite.Sprite):
 #		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
-	def render(self, numNext):
+	def render(self, numNext, divLastOp):
 		if numNext:
 			self.image = self.image0
 		else:
@@ -804,7 +804,10 @@ class Game(spyral.scene.Scene):
 
 		#render apples
 		for f in self.foodItems:
-			f.render(self.snake.lastType == 'Operator')
+			if len(self.snake.nodes) < 3:
+				f.render(self.snake.lastType == 'Operator', False)
+			else:
+				f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
 
 		if self.eating == False and self.clearing == False:
 			self.count += 1
@@ -1097,7 +1100,7 @@ def init():
 
 	images['caterpillarColors'] = []
 	for i in range(3):
-		images['caterpillarColors'].append(spyral.util.load_image('games/snake/Images/Caterpillar/CharSelect/'+str(i%2)+'.png'))
+		images['caterpillarColors'].append(spyral.util.load_image('games/snake/Images/Caterpillar/CharSelect/'+str(i)+'.png'))
 	
 	images['characters'] = [images['adderColors'],images['condaColors'],images['diamondColors'],images['caterpillarColors']]
 	

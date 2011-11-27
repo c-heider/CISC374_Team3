@@ -825,16 +825,16 @@ class Game(spyral.scene.Scene):
 				newDirection = self.snake.direction
 				for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 					if event.type == pygame.KEYDOWN:
-						if event.key == pygame.K_e:
+						if (event.key == pygame.K_e or event.key ==  pygame.K_KP1):
 							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"
 									and (self.snake.nodes[0].value%self.snake.nodes[2].value != 0 and 
 									fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1) and
 									math.fabs(self.snake.nodes[0].value) > self.snake.nodes[2].value):
 								self.expanding = True
 								return
-						if event.key == pygame.K_q:
+						if (event.key == pygame.K_q or event.key ==  pygame.K_KP9):
 							spyral.director.pop()
-						if event.key == pygame.K_c and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
+						if (event.key == pygame.K_c or event.key ==  pygame.K_KP3) and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
 							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"
 									and (self.snake.nodes[0].value%self.snake.nodes[2].value != 0 and 
 									fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1)):
@@ -842,7 +842,7 @@ class Game(spyral.scene.Scene):
 								return
 							self.collapsing = True
 							return
-						if event.key == pygame.K_UP and (self.snake.direction != directions['down'] or len(self.snake.nodes) == 0):
+						if (event.key == pygame.K_UP or event.key ==  pygame.K_KP8) and (self.snake.direction != directions['down'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							oldDirection = self.snake.direction
 							newDirection = directions['up']
@@ -851,7 +851,7 @@ class Game(spyral.scene.Scene):
 							self.snake.render()
 							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
-						elif event.key == pygame.K_DOWN and (self.snake.direction != directions['up'] or len(self.snake.nodes) == 0):
+						elif (event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2) and (self.snake.direction != directions['up'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							oldDirection = self.snake.direction
 							newDirection = directions['down']
@@ -860,7 +860,7 @@ class Game(spyral.scene.Scene):
 							self.snake.render()
 							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
-						elif event.key == pygame.K_RIGHT and (self.snake.direction != directions['left'] or len(self.snake.nodes) == 0):
+						elif (event.key == pygame.K_RIGHT or event.key ==  pygame.K_KP6) and (self.snake.direction != directions['left'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							oldDirection = self.snake.direction
 							newDirection = directions['right']
@@ -869,7 +869,7 @@ class Game(spyral.scene.Scene):
 							self.snake.render()
 							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
-						elif event.key == pygame.K_LEFT and (self.snake.direction != directions['right'] or len(self.snake.nodes) == 0):
+						elif (event.key == pygame.K_LEFT or event.key ==  pygame.K_KP4) and (self.snake.direction != directions['right'] or len(self.snake.nodes) == 0):
 							self.moving = True
 							oldDirection = self.snake.direction
 							newDirection = directions['left']
@@ -879,13 +879,13 @@ class Game(spyral.scene.Scene):
 							self.snake.eaten = eaten
 							self.snake.direction = oldDirection
 					elif event.type == pygame.KEYUP:
-						if event.key == pygame.K_UP and newDirection == directions['up']:
+						if (event.key == pygame.K_UP or event.key ==  pygame.K_KP8) and newDirection == directions['up']:
 							self.moving = False
-						elif event.key == pygame.K_DOWN and newDirection == directions['down']:
+						elif (event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2) and newDirection == directions['down']:
 							self.moving = False
-						elif event.key == pygame.K_RIGHT and newDirection == directions['right']:
+						elif (event.key == pygame.K_RIGHT or event.key ==  pygame.K_KP6) and newDirection == directions['right']:
 							self.moving = False
-						elif event.key == pygame.K_LEFT and newDirection == directions['left']:
+						elif (event.key == pygame.K_LEFT or event.key ==  pygame.K_KP4) and newDirection == directions['left']:
 							self.moving = False
 				pygame.event.clear()
 

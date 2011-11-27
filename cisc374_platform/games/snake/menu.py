@@ -174,17 +174,17 @@ class Menu(spyral.scene.Scene):
 		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 			
 			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_DOWN:
+				if (event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2):
 					self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button + 1) % len(self.buttons)
 					self.buttons[self.selected_button].focus()
 				
-				elif event.key == pygame.K_UP:
+				elif (event.key == pygame.K_UP or event.key ==  pygame.K_KP8):
 					self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button - 1) % len(self.buttons)
 					self.buttons[self.selected_button].focus()
 					
-				elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+				elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key ==  pygame.K_KP3:
 					if self.selected_button == 0:
 						# Start button clicked
 						# move to Game scene
@@ -279,18 +279,18 @@ class CharacterSelect(spyral.scene.Scene):
 		# get events (keyboard, mouse, etc.)
 		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 			
-			if event.type == pygame.KEYDOWN:
+			if event.type == pygame.KEYDOWN or event.key ==  pygame.K_KP2:
 				if event.key == pygame.K_DOWN:
 					self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button + 1) % len(self.buttons)
 					self.buttons[self.selected_button].focus()
 				
-				elif event.key == pygame.K_UP:
+				elif event.key == pygame.K_UP or event.key ==  pygame.K_KP8:
 					self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button - 1) % len(self.buttons)
 					self.buttons[self.selected_button].focus()
 					
-				elif event.key == pygame.K_LEFT:
+				elif event.key == pygame.K_LEFT or event.key ==  pygame.K_KP4:
 					if self.selected_button == 0:
 						# change character
 						self.selected_character = (self.selected_character - 1) % len(strings['char_sources'])
@@ -306,7 +306,7 @@ class CharacterSelect(spyral.scene.Scene):
 						self.player.changeColor((self.player.color - 1) % geom['total_colors'])
 						self.character.set_character((self.selected_character % len(images['characters'])), self.player.color)
 				
-				elif event.key == pygame.K_RIGHT:
+				elif event.key == pygame.K_RIGHT or event.key ==  pygame.K_KP6:
 					if self.selected_button == 0:
 						# change character
 						self.selected_character = (self.selected_character + 1) % len(strings['char_sources'])
@@ -322,13 +322,15 @@ class CharacterSelect(spyral.scene.Scene):
 						self.player.changeColor((self.player.color + 1) % geom['total_colors'])
 						self.character.set_character((self.selected_character % len(images['characters'])), self.player.color)
 					
-				elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+				elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key ==  pygame.K_KP3:
 					spyral.director.pop()
+					pygame.mouse.set_visible(True)
 		pygame.event.clear()
 
 def launch():
 	spyral.init()
-
+	
+	#this function is in game.py
 	init()
 	spyral.director.push(Menu(player.Player()))
 	
@@ -336,3 +338,4 @@ def launch():
 	pygame.event.set_allowed(pygame.KEYDOWN)
 	pygame.event.set_allowed(pygame.KEYUP)
 	pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
+	pygame.mouse.set_visible(False)

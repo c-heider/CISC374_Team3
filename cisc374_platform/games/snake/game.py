@@ -327,7 +327,7 @@ class Game(spyral.scene.Scene):
 		pygame.event.set_allowed(pygame.KEYDOWN)
 		pygame.event.set_allowed(pygame.KEYUP)
 		pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
-		pygame.mouse.set_visible(False)
+		
 	
 			
 	#get two empty spaces and corresponding directions for expansion. Return False if such do not exist

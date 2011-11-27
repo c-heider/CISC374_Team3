@@ -197,6 +197,7 @@ class Menu(spyral.scene.Scene):
 						
 					elif self.selected_button == 2:
 						# Quit button clicked
+						pygame.mouse.set_visible(True)
 						exit(0)
 		pygame.event.clear()
 
@@ -324,7 +325,6 @@ class CharacterSelect(spyral.scene.Scene):
 					
 				elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key ==  pygame.K_KP3:
 					spyral.director.pop()
-					pygame.mouse.set_visible(True)
 		pygame.event.clear()
 
 def launch():

@@ -3,6 +3,7 @@ import spyral
 import random
 import math
 import fractions
+import player
 from os import path
 
 MOVES_PER_SECOND = 5
@@ -260,12 +261,13 @@ class Snake(spyral.sprite.Sprite):
 			self.length = self.length+1
 
 class Game(spyral.scene.Scene):
-	def __init__(self, snakeType, colorInt):
+	def __init__(self, player):
 		spyral.scene.Scene.__init__(self)
 
 		#Init Images
-		self.colorInt = colorInt
-		self.snakeType = snakeType
+		self.player = player
+		self.snakeType = self.player.name
+		self.colorInt = self.player.color
 
 		self.clock.ticks_per_second = TICKS_PER_SECOND
 		self.root_camera = spyral.director.get_camera()

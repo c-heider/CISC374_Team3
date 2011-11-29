@@ -280,8 +280,8 @@ class CharacterSelect(spyral.scene.Scene):
 		# get events (keyboard, mouse, etc.)
 		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 			
-			if event.type == pygame.KEYDOWN or event.key ==  pygame.K_KP2:
-				if event.key == pygame.K_DOWN:
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2:
 					self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button + 1) % len(self.buttons)
 					self.buttons[self.selected_button].focus()

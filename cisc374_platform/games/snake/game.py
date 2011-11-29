@@ -846,7 +846,7 @@ class Game(spyral.scene.Scene):
 								return
 						if (event.key == pygame.K_q or event.key ==  pygame.K_KP9):
 							spyral.director.pop()
-						if (event.key == pygame.K_r):
+						if (event.key == pygame.K_r or event.key ==  pygame.K_KP1):
 							self.foodItems = self.clearApples(self.foodItems)
 							self.foodItems = self.initApples()
 							for i in self.foodItems:

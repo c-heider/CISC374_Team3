@@ -188,7 +188,7 @@ class Menu(spyral.scene.Scene):
 					if self.selected_button == 0:
 						# Start button clicked
 						# move to Game scene
-						spyral.director.push(Game(self.player))
+						spyral.director.push(Game(self.player.name, self.player.color))
 					
 					elif self.selected_button == 1:
 						# Character Select button clicked 
@@ -241,9 +241,9 @@ class CharacterSelect(spyral.scene.Scene):
 #       title.rect.center = (center_x, geom['character_title_y'])
 		
 		# character name
-		self.selected_character = self.player.nameToInt()
-		self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][self.selected_character],fonts['character_name'], colors['character_color'], 'center')
-		self.character = Character((center_x, geom['character_image_y']), self.selected_character,0)
+		self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][0],fonts['character_name'], colors['character_color'], 'center')
+		self.selected_character = 0
+		self.character = Character((center_x, geom['character_image_y']), 0,0)
 
 		# select color
 		self.character_color = Text((center_x, geom['character_color_y']), "Color Select",fonts['character_color'], colors['character_color'], 'center')
@@ -280,8 +280,8 @@ class CharacterSelect(spyral.scene.Scene):
 		# get events (keyboard, mouse, etc.)
 		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
 			
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2:
+			if event.type == pygame.KEYDOWN or event.key ==  pygame.K_KP2:
+				if event.key == pygame.K_DOWN:
 					self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button + 1) % len(self.buttons)
 					self.buttons[self.selected_button].focus()

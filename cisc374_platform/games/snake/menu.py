@@ -334,8 +334,5 @@ def launch():
 	init()
 	spyral.director.push(Menu(player.Player()))
 	
-	pygame.event.set_allowed(None)
-	pygame.event.set_allowed(pygame.KEYDOWN)
-	pygame.event.set_allowed(pygame.KEYUP)
-	pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
+
 	pygame.mouse.set_visible(False)

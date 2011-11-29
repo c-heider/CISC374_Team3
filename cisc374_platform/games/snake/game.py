@@ -273,7 +273,23 @@ class Game(spyral.scene.Scene):
 		self.root_camera = spyral.director.get_camera()
 		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT),layers=['other','food','operatorNodes','numberNodes','head'])		
 		self.group = spyral.sprite.Group(self.camera)
-		
+
+	def initApples(self):
+		foodItems = [Operator([],[],self.snake.location)]
+		for n in range(0,3):
+			foodItems.append(Number(foodItems,[],self.snake.location))
+		for n in range(0,2):
+			foodItems.append(Operator(foodItems,[],self.snake.location))
+		return foodItems
+
+	def clearApples(self,foodItems):
+		if foodItems == []:
+			return foodItems
+		else:
+			first = foodItems.pop(0)
+			first.kill()
+			self.clearApples(foodItems)
+	
 		
 	def on_enter(self):
  		self.camera.set_background(images['background'])
@@ -294,13 +310,9 @@ class Game(spyral.scene.Scene):
 
 		self.goal = 15
 		self.snake = Snake()
-		self.foodItems = [Operator([],[],self.snake.location)]
-		for n in range(0,3):
-			self.foodItems.append(Number(self.foodItems,[],self.snake.location))
-		for n in range(0,2):
-			self.foodItems.append(Operator(self.foodItems,[],self.snake.location))
+		self.foodItems = self.initApples()
 		for i in self.foodItems:
-			self.group.add(i,)
+			self.group.add(i)
 		self.moving = False
 		self.collapsing = False
 		self.collapseIndex = 0
@@ -836,6 +848,12 @@ class Game(spyral.scene.Scene):
 								return
 						if (event.key == pygame.K_q or event.key ==  pygame.K_KP9):
 							spyral.director.pop()
+						if (event.key == pygame.K_r):
+							self.foodItems = self.clearApples(self.foodItems)
+							self.foodItems = self.initApples()
+							for i in self.foodItems:
+								self.group.add(i)
+								
 						if (event.key == pygame.K_c or event.key ==  pygame.K_KP3) and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
 							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"
 									and (self.snake.nodes[0].value%self.snake.nodes[2].value != 0 and 

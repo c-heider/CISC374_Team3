@@ -851,6 +851,7 @@ class Game(spyral.scene.Scene):
 							self.foodItems = self.initApples()
 							for i in self.foodItems:
 								self.group.add(i)
+							return
 								
 						if (event.key == pygame.K_c or event.key ==  pygame.K_KP3) and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
 							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"

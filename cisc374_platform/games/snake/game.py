@@ -94,7 +94,7 @@ class Expression(spyral.sprite.Sprite):
 	def render(self):
 		if self.express != self.oldExpress:
 			self.image = fonts['expression'].render( " ".join(self.express),True,colors['expression'])
-			self.rect.midtop = (geom['expressionx'],geom['text_height_bottom'])
+			self.rect.midtop = (geom['expressionx'],geom['text_height_bottom'] + (BLOCK_SIZE/5))
 			self.oldExpress = self.express
 
 	def findExpression(self,s):
@@ -1071,7 +1071,7 @@ def init():
 	colors['number'] = (255,255,255)
 	colors['operator'] = (255,255,255)
 	colors['length'] = (0,0,0)
-	colors['expression'] = (255,0,0)
+	colors['expression'] = (0,0,0)
 	
 	colors['menu_start'] = (255,255,255)
 	colors['menu_character'] = (231,237,26)
@@ -1126,7 +1126,7 @@ def init():
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['length'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
-	fonts['expression'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
+	fonts['expression'] = pygame.font.Font('games/snake/MangaTemple.ttf',3*BLOCK_SIZE/5)
 	
 	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
 	fonts['menu_character'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)

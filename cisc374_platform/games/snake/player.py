@@ -10,12 +10,14 @@ class Level(object):
 	
 	def makeLevelGoal(self):
 		if self.currLevel == 0:
-			return randInt(1,20)
+			return random.randint(1,20)
 		if self.currLevel == 1:
-			return randInt(-40,40)
+			return random.randint(-40,40)
 		if self.currLevel == 2:
-			return randInt(-100,100)
-
+			return random.randint(-100,100)
+	
+	def increase(self):
+		self.currLevel += 1
 
 class Player(object):
 	def __init__(self,name = "Adder",color = 0,level = Level()):
@@ -30,7 +32,7 @@ class Player(object):
 		self.name = newName
 	
 	def increaseLevel(self):
-		self.level += 1
+		self.level.increase()
 	
 	def nameToInt(self):
 		if self.name == "Adder":

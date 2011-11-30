@@ -129,21 +129,12 @@ class Length(spyral.sprite.Sprite):
 			self.oldVal = self.val
 
 class Operator(spyral.sprite.Sprite):
-	def __init__(self,foodItems,snake,head):
+	def __init__(self,foodItems,snake,head,level):
 		spyral.sprite.Sprite.__init__(self)
 		self.location = openSpace(foodItems,snake,head)
-		used = False
+		self.used = False
+		self.determineValFrom(level,foodItems)
 		self._set_layer('food')
-		for f in foodItems:
-			if f.val == "*" or f.val == "/":
-				used = True
-		if len(snake) > 0:
-			if snake[len(snake)-1].value == "/":
-				used = True
-		if used == False:
-			self.val = operators[random.randrange(0,4,1)]
-		else:
-			self.val = operators[random.randrange(0,2,1)]
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
 		self.image0 = images['Apple10'].copy()
 		self.image0.blit(self.valImage,((BLOCK_SIZE - self.valImage.get_size()[0])/2 - APPLE_D/2,(BLOCK_SIZE - self.valImage.get_size()[1])/2 - APPLE_D/2))
@@ -157,7 +148,23 @@ class Operator(spyral.sprite.Sprite):
 			self.image = self.image1
 		else:
 			self.image = self.image0
-		
+	
+	def determineValFrom(self,level,foodItems):
+		if level.currLevel == 0:
+			self.val = operators[random.randint(0,1)]
+		elif level.currLevel == 1:
+			self.val = operators[random.randint(0,2)]
+		else:
+			for f in foodItems:
+				if f.val == "*" or f.val == "/":
+					self.used = True
+			if len(snake) > 0:
+				if snake[len(snake)-1].value == "/":
+					self.used = True
+			if self.used == False:
+				self.val = operators[random.randrange(0,4,1)]
+			else:
+				self.val = operators[random.randrange(0,2,1)]
 
 class Number(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head):
@@ -273,11 +280,11 @@ class Game(spyral.scene.Scene):
 		self.group = spyral.sprite.Group(self.camera)
 
 	def initApples(self):
-		foodItems = [Operator([],[],self.snake.location)]
+		foodItems = [Operator([],[],self.snake.location,self.player.level)]
 		for n in range(0,3):
 			foodItems.append(Number(foodItems,[],self.snake.location))
 		for n in range(0,2):
-			foodItems.append(Operator(foodItems,[],self.snake.location))
+			foodItems.append(Operator(foodItems,[],self.snake.location,self.player.level))
 		return foodItems
 
 	def clearApples(self,foodItems):
@@ -989,7 +996,7 @@ class Game(spyral.scene.Scene):
 					#get new FoodItem if necessary
 					if found:
 						if itemName == 'Operator':
-							newItem = Operator(self.foodItems,self.snake.nodes,self.snake.location)
+							newItem = Operator(self.foodItems,self.snake.nodes,self.snake.location,self.player.level)
 							self.foodItems.append(newItem)
 							self.group.add(newItem)
 						else:

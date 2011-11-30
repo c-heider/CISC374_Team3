@@ -137,7 +137,7 @@ class Operator(spyral.sprite.Sprite):
 		spyral.sprite.Sprite.__init__(self)
 		self.location = openSpace(foodItems,snake,head)
 		self.used = False
-		self.determineValFrom(level,foodItems)
+		self.determineValFrom(level,foodItems,snake)
 		self._set_layer('food')
 		self.valImage = fonts['node'].render(str(self.val),True,colors['bodynode'])
 		self.image0 = images['Apple10'].copy()
@@ -153,7 +153,7 @@ class Operator(spyral.sprite.Sprite):
 		else:
 			self.image = self.image0
 	
-	def determineValFrom(self,level,foodItems):
+	def determineValFrom(self,level,foodItems,snake):
 		if level.currLevel == 0:
 			self.val = operators[random.randint(0,1)]
 		elif level.currLevel == 1:
@@ -1034,6 +1034,12 @@ class Game(spyral.scene.Scene):
 					(self.snake.nodes[0].value%self.snake.nodes[2].value != 0 and
 					fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1)))):
 				self.collapsing = False
+				#check to see if the goal is reached 
+				if self.goal.isReached(self.snake.nodes[0].value):
+					self.player.level.increase()
+					self.goal.kill()
+					self.goal = Goal(self.player.level)
+					self.group.add(self.goal)
 
 			#step each Sprite towards its new location
 			if self.count != 0 and self.eating == False:

@@ -2,10 +2,7 @@ import random
 
 class Level(object):
 	def __init__(self):
-		self.levelOneScore = 0
-		self.levelTwoScore = 0
-		self.levelThreeScore = 0
-		
+		self.levelScores = []
 		self.currLevel = 0
 	
 	def makeLevelGoal(self):

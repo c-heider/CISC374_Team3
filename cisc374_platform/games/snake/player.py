@@ -1,5 +1,24 @@
+import random
+
+class Level(object):
+	def __init__(self):
+		self.levelOneScore = 0
+		self.levelTwoScore = 0
+		self.levelThreeScore = 0
+		
+		self.currLevel = 0
+	
+	def makeLevelGoal(self):
+		if self.currLevel == 0:
+			return randInt(1,20)
+		if self.currLevel == 1:
+			return randInt(-40,40)
+		if self.currLevel == 2:
+			return randInt(-100,100)
+
+
 class Player(object):
-	def __init__(self,name = "Adder",color = 0,level = 0):
+	def __init__(self,name = "Adder",color = 0,level = Level()):
 		self.name = name
 		self.color = color
 		self.level = level
@@ -24,4 +43,3 @@ class Player(object):
 			return 3
 		else:
 			return 0
-	

@@ -242,7 +242,7 @@ class CharacterSelect(spyral.scene.Scene):
 		
 		# character name
 		self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][self.player.nameToInt()],fonts['character_name'], colors['character_color'], 'center')
-		self.selected_character = 0
+		self.selected_character = self.player.nameToInt()
 		self.character = Character((center_x, geom['character_image_y']), self.player.nameToInt(),self.player.color)
 
 		# select color

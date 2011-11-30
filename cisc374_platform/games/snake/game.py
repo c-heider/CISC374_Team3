@@ -103,10 +103,11 @@ class Expression(spyral.sprite.Sprite):
 			self.express.append(str(n.value))
 
 class Goal(spyral.sprite.Sprite):
-	def __init__(self):
-		spyral.sprite.Sprite.__init__(self)
-		self._set_layer('other')
-		self.val = random.randrange(0,20,1)
+	def __init__(self,level):
+		spyral.sprite.Sprite__init__(self)
+		self.set_layer('other')
+		self.level = level
+		self.val = self.level.makeLevelGoal()
 		self.render()
 
 	def render(self):

@@ -104,15 +104,19 @@ class Expression(spyral.sprite.Sprite):
 
 class Goal(spyral.sprite.Sprite):
 	def __init__(self,level):
-		spyral.sprite.Sprite__init__(self)
-		self.set_layer('other')
+		spyral.sprite.Sprite.__init__(self)
+		self._set_layer('other')
 		self.level = level
 		self.val = self.level.makeLevelGoal()
 		self.render()
 
 	def render(self):
 		self.image = fonts['goal'].render("Goal: %d" % self.val,True,colors['goal'])
-		self.rect.midtop = (geom['goalx'],geom['text_height'])
+		self.rect.midtop = (geom['goalx'],geom['text_height_bottom'] + (BLOCK_SIZE/4))
+	
+	def isReached(self,snakeVal):
+		#return self.val == (int)snakeVal
+		return True
 
 class Length(spyral.sprite.Sprite):
 	def __init__(self):
@@ -313,7 +317,8 @@ class Game(spyral.scene.Scene):
 				url = "games/snake/Images/Other/Apple"+str(apple)+str(clear)+".png"
 				images['Apple'+str(apple)+str(clear)] = spyral.util.load_image(url)
 
-		self.goal = 15
+		self.goal = Goal(self.player.level)
+		self.group.add(self.goal)
 		self.snake = Snake()
 		self.foodItems = self.initApples()
 		for i in self.foodItems:
@@ -1079,6 +1084,7 @@ def init():
 	colors['operator'] = (255,255,255)
 	colors['length'] = (0,0,0)
 	colors['expression'] = (0,0,0)
+	colors['goal'] = (0,0,0)
 	
 	colors['menu_start'] = (255,255,255)
 	colors['menu_character'] = (231,237,26)
@@ -1134,6 +1140,7 @@ def init():
 	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['length'] = pygame.font.SysFont(None,BLOCK_SIZE/2)
 	fonts['expression'] = pygame.font.Font('games/snake/MangaTemple.ttf',BLOCK_SIZE/2)
+	fonts['goal'] = fonts['expression']
 	
 	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
 	fonts['menu_character'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
@@ -1146,6 +1153,7 @@ def init():
 
 	geom['lengthx'] = WIDTH - BLOCK_SIZE*2
 	geom['expressionx'] = 0
+	geom['goalx'] = (WIDTH/2)
 	geom['text_height'] = 0
 	geom['text_height_bottom'] = HEIGHT - BLOCK_SIZE
 	

@@ -11,10 +11,12 @@ class Level(object):
 	def makeLevelGoal(self):
 		if self.currLevel == 0:
 			return random.randint(1,20)
-		if self.currLevel == 1:
+		elif self.currLevel == 1:
 			return random.randint(-40,40)
-		if self.currLevel == 2:
+		elif self.currLevel == 2:
 			return random.randint(-100,100)
+		else:
+			return random.randint(-3000,3000)
 	
 	def increase(self):
 		self.currLevel += 1

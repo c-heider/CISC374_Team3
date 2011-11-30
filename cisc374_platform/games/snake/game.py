@@ -94,7 +94,7 @@ class Expression(spyral.sprite.Sprite):
 	def render(self):
 		if self.express != self.oldExpress:
 			self.image = fonts['expression'].render( " ".join(self.express),True,colors['expression'])
-			self.rect.midtop = (geom['expressionx'],geom['text_height_bottom'] + (BLOCK_SIZE/5))
+			self.rect.midtop = (geom['expressionx'],geom['text_height_bottom'] + (BLOCK_SIZE/4))
 			self.oldExpress = self.express
 
 	def findExpression(self,s):
@@ -124,7 +124,7 @@ class Length(spyral.sprite.Sprite):
 	def render(self):
 		if self.val != self.oldVal:
 			self.image = fonts['length'].render("Length: %d" % self.val,True,colors['length'])
-			self.rect.midtop = (geom['lengthx'],geom['text_height_bottom'])
+			self.rect.midtop = (geom['lengthx'],geom['text_height_bottom'] + (BLOCK_SIZE/4))
 			self.oldVal = self.val
 
 class Operator(spyral.sprite.Sprite):
@@ -335,7 +335,10 @@ class Game(spyral.scene.Scene):
 		self.expandIndex = 0
 		self.oldFrac = None
 		self.newInt = 0
-
+		pygame.event.set_allowed(None)
+		pygame.event.set_allowed(pygame.KEYDOWN)
+		pygame.event.set_allowed(pygame.KEYUP)
+		pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
 		
 	
 			
@@ -840,19 +843,22 @@ class Game(spyral.scene.Scene):
 									fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1) and
 									math.fabs(self.snake.nodes[0].value) > self.snake.nodes[2].value):
 								self.expanding = True
-								pygame.event.clear()
 								return
 						if (event.key == pygame.K_q or event.key ==  pygame.K_KP9):
 							spyral.director.pop()
-							
+						if (event.key == pygame.K_r):
+							self.foodItems = self.clearApples(self.foodItems)
+							self.foodItems = self.initApples()
+							for i in self.foodItems:
+								self.group.add(i)
+								
 						if (event.key == pygame.K_c or event.key ==  pygame.K_KP3) and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
 							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"
 									and (self.snake.nodes[0].value%self.snake.nodes[2].value != 0 and 
 									fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1)):
-								pygame.event.clear()
+							
 								return
 							self.collapsing = True
-							pygame.event.clear()
 							return
 						if (event.key == pygame.K_UP or event.key ==  pygame.K_KP8) and (self.snake.direction != directions['down'] or len(self.snake.nodes) == 0):
 							self.moving = True
@@ -899,23 +905,6 @@ class Game(spyral.scene.Scene):
 							self.moving = False
 						elif (event.key == pygame.K_LEFT or event.key ==  pygame.K_KP4) and newDirection == directions['left']:
 							self.moving = False
-						
-						if (event.key == pygame.K_r or event.key ==  pygame.K_KP7):
-							self.foodItems = self.clearApples(self.foodItems)
-							self.foodItems = self.initApples()
-							for i in self.foodItems:
-								self.group.add(i)
-								
-							#render apples
-							for f in self.foodItems:
-								if len(self.snake.nodes) < 3:
-									f.render(self.snake.lastType == 'Operator', False)
-								else:
-									f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
-							pygame.event.clear()
-							self.count = TICKS_PER_MOVE - 1
-							return
-							
 				pygame.event.clear()
 
 
@@ -1125,7 +1114,7 @@ def init():
 	
 	images['diamondColors'] = []
 	for i in range(3):
-		images['diamondColors'].append(spyral.util.load_image('games/snake/Images/Diamondback/CharSelect/0.png'))
+		images['diamondColors'].append(spyral.util.load_image('games/snake/Images/Diamondback/CharSelect/' + str(i) + '.png'))
 
 	images['caterpillarColors'] = []
 	for i in range(3):
@@ -1136,8 +1125,8 @@ def init():
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
 	fonts['operator'] = pygame.font.SysFont(None,BLOCK_SIZE)
-	fonts['length'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
-	fonts['expression'] = pygame.font.Font('games/snake/MangaTemple.ttf',3*BLOCK_SIZE/5)
+	fonts['length'] = pygame.font.SysFont(None,BLOCK_SIZE/2)
+	fonts['expression'] = pygame.font.Font('games/snake/MangaTemple.ttf',BLOCK_SIZE/2)
 	
 	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
 	fonts['menu_character'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)

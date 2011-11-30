@@ -260,12 +260,11 @@ class Snake(spyral.sprite.Sprite):
 			self.length = self.length+1
 
 class Game(spyral.scene.Scene):
-	def __init__(self, snakeType, colorInt):
+	def __init__(self, player):
 		spyral.scene.Scene.__init__(self)
 
 		#Init Images
-		self.colorInt = colorInt
-		self.snakeType = snakeType
+		self.player = player
 
 		self.clock.ticks_per_second = TICKS_PER_SECOND
 		self.root_camera = spyral.director.get_camera()
@@ -294,11 +293,11 @@ class Game(spyral.scene.Scene):
 		size = 60
 		for direction in range(4):
 			bodyImageString = 'body' + directionChars[direction]
-			url = "games/snake/Images/" + str(self.snakeType) + "/"+ str(size) +"/"+ str(self.colorInt) + "/Body_" + str(directionChars[direction]) + ".png"
+			url = "games/snake/Images/" + str(self.player.name) + "/"+ str(size) +"/"+ str(self.player.color) + "/Body_" + str(directionChars[direction]) + ".png"
 			images[bodyImageString] = spyral.util.load_image(url)
 			for frame in range(7):
 				headImageString= 'head' + str(frame) + directionChars[direction]
-				url = "games/snake/Images/" + str(self.snakeType) + "/" + str(size) +"/"+ str(self.colorInt) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
+				url = "games/snake/Images/" + str(self.player.name) + "/" + str(size) +"/"+ str(self.player.color) + "/Head_" + str(directionChars[direction]) + str(frame)+ ".png"
 				images[headImageString] = spyral.util.load_image(url)
 
 		for apple in range(2):

@@ -188,7 +188,7 @@ class Menu(spyral.scene.Scene):
 					if self.selected_button == 0:
 						# Start button clicked
 						# move to Game scene
-						spyral.director.push(Game(self.player.name, self.player.color))
+						spyral.director.push(Game(self.player))
 					
 					elif self.selected_button == 1:
 						# Character Select button clicked 
@@ -203,7 +203,7 @@ class Menu(spyral.scene.Scene):
 
 class Character(spyral.sprite.Sprite):
 	
-	def __init__(self, center, character,color):
+	def __init__(self, center, character, color):
 		spyral.sprite.Sprite.__init__(self)
 		self.set_character(character,color)
 		self.rect.center = center
@@ -241,9 +241,9 @@ class CharacterSelect(spyral.scene.Scene):
 #       title.rect.center = (center_x, geom['character_title_y'])
 		
 		# character name
-		self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][0],fonts['character_name'], colors['character_color'], 'center')
+		self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][self.player.nameToInt()],fonts['character_name'], colors['character_color'], 'center')
 		self.selected_character = 0
-		self.character = Character((center_x, geom['character_image_y']), 0,0)
+		self.character = Character((center_x, geom['character_image_y']), self.player.nameToInt(),self.player.color)
 
 		# select color
 		self.character_color = Text((center_x, geom['character_color_y']), "Color Select",fonts['character_color'], colors['character_color'], 'center')

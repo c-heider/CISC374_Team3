@@ -347,10 +347,7 @@ class Game(spyral.scene.Scene):
 		self.expandIndex = 0
 		self.oldFrac = None
 		self.newInt = 0
-		pygame.event.set_allowed(None)
-		pygame.event.set_allowed(pygame.KEYDOWN)
-		pygame.event.set_allowed(pygame.KEYUP)
-		pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
+
 		
 	
 			

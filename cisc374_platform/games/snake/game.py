@@ -115,8 +115,8 @@ class Goal(spyral.sprite.Sprite):
 		self.rect.midtop = (geom['goalx'],geom['text_height_bottom'] + (BLOCK_SIZE/4))
 	
 	def isReached(self,snakeVal):
-		#return self.val == (int)snakeVal
-		return True
+		return self.val == snakeVal
+		#return True
 
 class Length(spyral.sprite.Sprite):
 	def __init__(self):

@@ -347,10 +347,7 @@ class Game(spyral.scene.Scene):
 		self.expandIndex = 0
 		self.oldFrac = None
 		self.newInt = 0
-		pygame.event.set_allowed(None)
-		pygame.event.set_allowed(pygame.KEYDOWN)
-		pygame.event.set_allowed(pygame.KEYUP)
-		pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
+
 		
 	
 			
@@ -385,6 +382,7 @@ class Game(spyral.scene.Scene):
 				continue
 			else:
 				for j in range(0,4):
+
 					
 					secondDir = (newDirection + j)%4
 					if secondDir == directions['up']:
@@ -1140,6 +1138,13 @@ def init():
 		images['caterpillarColors'].append(spyral.util.load_image('games/snake/Images/Caterpillar/CharSelect/'+str(i)+'.png'))
 	
 	images['characters'] = [images['adderColors'],images['condaColors'],images['diamondColors'],images['caterpillarColors']]
+
+	#load CharSelect images
+	images['tiles'] = []
+	for i in range(len(strings['char_sources'])):
+		images['tiles'].append(spyral.util.load_image('games/snake/Images/Other/CharSelect/'+strings['char_sources'][i]+'.png'))
+	images['colorSelectTile'] = spyral.util.load_image('games/snake/Images/Other/CharSelect/ColorSelect.png')
+	images['arrows'] = spyral.util.load_image('games/snake/Images/Other/CharSelect/Arrows.png')
 	
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
@@ -1178,9 +1183,9 @@ def init():
 	geom['character_unlock_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
 	geom['character_back_x'] = 40
 	geom['character_back_y'] = geom['menu_quit_y']
-	geom['character_image_y'] = HEIGHT/2
-	geom['character_name_y'] = HEIGHT/2 + 3*images['characters'][0][0].get_height()/4
-	geom['character_color_y'] = geom['character_name_y'] + images['button_normal'].get_height()/2
+	geom['character_image_y'] = HEIGHT/2 
+	geom['character_name_y'] = HEIGHT/2 + images['characters'][0][0].get_height()
+	geom['character_color_y'] = geom['character_name_y'] + images['tiles'][0].get_height()
 	geom['character_color_select_y'] = geom['character_color_y'] + images['color_select'].get_height()
 	
 	geom['total_colors'] = 3

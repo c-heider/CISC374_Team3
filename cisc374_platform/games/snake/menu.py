@@ -130,6 +130,42 @@ class ImageButton(spyral.sprite.Sprite):
 		self.highlight = focus
 		self.render()
 
+class TileButton(spyral.sprite.Sprite):
+	
+	def __init__(self, pos, images, tNum):
+		spyral.sprite.Sprite.__init__(self)
+
+		self.images = images
+		self.tileNum = tNum
+
+		self.render()
+		self.rect.center = pos
+		
+	def render(self):
+		self.image = self.images[self.tileNum]
+
+class Tile(spyral.sprite.Sprite):
+	
+	def __init__(self, pos, image):
+		spyral.sprite.Sprite.__init__(self)
+
+		self.image = image
+		self.rect.center = pos
+
+class Arrows(spyral.sprite.Sprite):
+	
+	def __init__(self, center, image):
+		spyral.sprite.Sprite.__init__(self)
+
+		self.image = image
+		self.positions = [(center, geom['character_name_y']), (center, geom['character_color_y'])]
+		self.curPos = 0
+		self.render()
+
+	def render(self):
+		self.rect.center = self.positions[self.curPos]
+		
+
 class Menu(spyral.scene.Scene):
 	"""Menu Scene shows the game title, buttons to start game, select
 	characters or view achievements."""
@@ -235,36 +271,35 @@ class CharacterSelect(spyral.scene.Scene):
 		
 		center_x = self.camera.get_rect().centerx
 
+		self.arrows = Arrows(center_x,images['arrows'])
+
+		self.tiles = TileButton((center_x, geom['character_name_y']), images['tiles'], self.player.nameToInt())
+
 		# title sprite
 #       title = spyral.sprite.Sprite()
 #       title.image = images['character_title']
 #       title.rect.center = (center_x, geom['character_title_y'])
 		
 		# character name
-		self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][self.player.nameToInt()],fonts['character_name'], colors['character_color'], 'center')
+		#self.character_name = Text((center_x, geom['character_name_y']), strings['characters'][self.player.nameToInt()],fonts['character_name'], colors['character_color'], 'center')
+		
 		self.selected_character = self.player.nameToInt()
 		self.character = Character((center_x, geom['character_image_y']), self.player.nameToInt(),self.player.color)
 
 		# select color
-		self.character_color = Text((center_x, geom['character_color_y']), "Color Select",fonts['character_color'], colors['character_color'], 'center')
+		self.character_color = Tile((center_x, geom['character_color_y']), images['colorSelectTile'])
 		self.selected_color = self.player.color
 		#self.color_select = ColorSelect((center_x, geom['character_color_select_y']))
-		
-		# back button
-		#back = Text((geom['character_back_x'], geom['character_back_y']), "BACK",
-					#fonts['character_back'], colors['character_back'], 'left')
-		
-		
-		# achievements/unlock
-#        unlock = Text((geom['character_unlock_x'], geom['character_unlock_y']), 
-#                      "Players select different\ncharacters, unlocked\nwith achievements",
-#                      fonts['character_unlock'], colors['character_unlock'])
 
-		self.buttons = [self.character_name, self.character_color]
-		self.selected_button = 0
-		self.buttons[self.selected_button].focus()
 		
-		self.group.add(self.character_name, self.character, self.character_color)
+		
+
+
+		self.buttons = [self.tiles, self.character_color]
+		self.selected_button = 0
+		#self.buttons[self.selected_button].focus()
+		
+		self.group.add(self.tiles, self.character, self.character_color, self.arrows)
 
 	def on_enter(self):
 		self.camera.set_background(images['menu_background'])
@@ -282,21 +317,23 @@ class CharacterSelect(spyral.scene.Scene):
 			
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2:
-					self.buttons[self.selected_button].focus(False)
+					#self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button + 1) % len(self.buttons)
-					self.buttons[self.selected_button].focus()
+					self.arrows.curPos = self.selected_button
+					#self.buttons[self.selected_button].focus()
 				
 				elif event.key == pygame.K_UP or event.key ==  pygame.K_KP8:
-					self.buttons[self.selected_button].focus(False)
+					#self.buttons[self.selected_button].focus(False)
 					self.selected_button = (self.selected_button - 1) % len(self.buttons)
-					self.buttons[self.selected_button].focus()
+					self.arrows.curPos = self.selected_button
+					#self.buttons[self.selected_button].focus()
 					
 				elif event.key == pygame.K_LEFT or event.key ==  pygame.K_KP4:
 					if self.selected_button == 0:
 						# change character
 						self.selected_character = (self.selected_character - 1) % len(strings['char_sources'])
-						self.character_name.set_label(strings['characters'][self.selected_character])
-						self.character_name.focus()
+						self.tiles.tileNum = self.selected_character
+						#self.character_name.focus()
 						
 						self.player.changeName(strings['char_sources'][self.selected_character])
 						self.player.changeColor(0)
@@ -311,8 +348,7 @@ class CharacterSelect(spyral.scene.Scene):
 					if self.selected_button == 0:
 						# change character
 						self.selected_character = (self.selected_character + 1) % len(strings['char_sources'])
-						self.character_name.set_label(strings['characters'][self.selected_character])
-						self.character_name.focus()
+						self.tiles.tileNum = self.selected_character
 						
 						self.player.changeName((strings['char_sources'][self.selected_character]))
 						self.player.changeColor(0)
@@ -325,6 +361,8 @@ class CharacterSelect(spyral.scene.Scene):
 					
 				elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key ==  pygame.K_KP3:
 					spyral.director.pop()
+		self.arrows.render()
+		self.tiles.render()
 		pygame.event.clear()
 
 def launch():

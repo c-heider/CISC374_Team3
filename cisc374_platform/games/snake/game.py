@@ -114,9 +114,12 @@ class Goal(spyral.sprite.Sprite):
 		self.image = fonts['goal'].render("Goal: %d" % self.val,True,colors['goal'])
 		self.rect.midtop = (geom['goalx'],geom['text_height_bottom'] + (BLOCK_SIZE/4))
 	
-	def isReached(self,snakeVal):
-		return self.val == snakeVal
-		#return True
+	def isReached(self,snakeNodes):
+		if len(snakeNodes) == 1:
+			return self.val == snakeNodes[0].value
+		else:
+			snakeFrac = fractions.Fraction(snakeNodes[0],snakeNodes[2])
+			return (self.val - 1 < snakeFrac and snakeFrac < self.val + 1)
 
 class Length(spyral.sprite.Sprite):
 	def __init__(self):
@@ -1046,7 +1049,7 @@ class Game(spyral.scene.Scene):
 					fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1)))):
 				self.collapsing = False
 				#check to see if the goal is reached 
-				if self.goal.isReached(self.snake.nodes[0].value):
+				if self.goal.isReached(self.snake.nodes):
 					self.player.level.increase()
 					self.goal.kill()
 					self.goal = Goal(self.player.level)

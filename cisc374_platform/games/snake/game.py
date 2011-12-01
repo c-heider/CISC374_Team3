@@ -856,19 +856,15 @@ class Game(spyral.scene.Scene):
 								return
 						if (event.key == pygame.K_q or event.key ==  pygame.K_KP9):
 							spyral.director.pop()
-						if (event.key == pygame.K_r):
-							self.foodItems = self.clearApples(self.foodItems)
-							self.foodItems = self.initApples()
-							for i in self.foodItems:
-								self.group.add(i)
 								
 						if (event.key == pygame.K_c or event.key ==  pygame.K_KP3) and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
 							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"
 									and (self.snake.nodes[0].value%self.snake.nodes[2].value != 0 and 
 									fractions.gcd(self.snake.nodes[0].value,self.snake.nodes[2].value) == 1)):
-							
+								pygame.event.clear()
 								return
 							self.collapsing = True
+							pygame.event.clear()
 							return
 						if (event.key == pygame.K_UP or event.key ==  pygame.K_KP8) and (self.snake.direction != directions['down'] or len(self.snake.nodes) == 0):
 							self.moving = True
@@ -915,6 +911,23 @@ class Game(spyral.scene.Scene):
 							self.moving = False
 						elif (event.key == pygame.K_LEFT or event.key ==  pygame.K_KP4) and newDirection == directions['left']:
 							self.moving = False
+					
+					if event.type == pygame.KEYDOWN and (event.key == pygame.K_r or event.key ==  pygame.K_KP7):
+						self.foodItems = self.clearApples(self.foodItems)
+						self.foodItems = self.initApples()
+						for i in self.foodItems:
+							self.group.add(i)
+						
+						#render apples
+						for f in self.foodItems:
+							if len(self.snake.nodes) < 3:
+								f.render(self.snake.lastType == 'Operator', False)
+							else:
+								f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
+						pygame.event.clear()
+						self.count = TICKS_PER_MOVE - 1
+						
+					
 				pygame.event.clear()
 
 

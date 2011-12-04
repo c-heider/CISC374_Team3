@@ -1,0 +1,2 @@
+Level Score mid = 500
+Total Score mid = 300

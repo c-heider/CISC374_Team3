@@ -338,8 +338,8 @@ class Game(spyral.scene.Scene):
 		self.eatIndex = 0
 		#self.score = Score()
 		#self.group.add(self.score)
-		self.length = Length()
-		self.group.add(self.length)
+		#self.length = Length()
+		#self.group.add(self.length)
 		self.expression = Expression()
 		self.group.add(self.expression)
 		self.clearing = False
@@ -819,9 +819,9 @@ class Game(spyral.scene.Scene):
 	def update(self,tick):
 
 		#render length of the snake
-		self.snake.findLength()
-		self.length.val = self.snake.length
-		self.length.render()
+		#self.snake.findLength()
+		#self.length.val = self.snake.length
+		#self.length.render()
 
 		#render the expression on the bottom
 		self.expression.findExpression(self.snake)
@@ -1180,7 +1180,7 @@ def init():
 
 	geom['lengthx'] = WIDTH - BLOCK_SIZE*2
 	geom['expressionx'] = 0
-	geom['goalx'] = (WIDTH/2)
+	geom['goalx'] = (WIDTH - BLOCK_SIZE*2)
 	geom['text_height'] = 0
 	geom['text_height_bottom'] = HEIGHT - BLOCK_SIZE
 	

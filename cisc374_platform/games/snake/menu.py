@@ -176,17 +176,17 @@ class Tablet(spyral.scene.Scene):
 		
 		center = self.camera.get_rect().center
 		
-		instructions = spyral.sprite.Sprite()
-		instructions.image = images['tablet_instructions']
-		instructions.rect.midtop = (center[0],HEIGHT-int(HEIGHT/7))
+		self.instructions = spyral.sprite.Sprite()
+		self.instructions.image = images['tablet_instructions']
+		self.instructions.rect.midtop = (center[0],HEIGHT-int(HEIGHT/7))
 		
-		tab = Tile(center,images['tablet'])
-		self.group.add(tab,instructions)
+		self.tab = Tile(center,images['tablet'])
 		
 	def on_enter(self):
 		bg = spyral.util.new_surface((WIDTH,HEIGHT))
 		bg.fill((255,255,255))
 		self.camera.set_background(bg)
+		self.group.add(self.tab,self.instructions)
 		
 	def render(self):
 		self.group.draw()   # draw group of sprites

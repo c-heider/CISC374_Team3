@@ -4,6 +4,7 @@ class Level(object):
 	def __init__(self):
 		self.levelScores = []
 		self.currLevel = 0
+		self.tempLevel = 0
 	
 	def makeLevelGoal(self):
 		if self.currLevel == 0:
@@ -16,13 +17,16 @@ class Level(object):
 			return random.randint(-100,100)
 	
 	def increase(self):
-		self.currLevel += 1
+		self.tempLevel += 1
+		if self.tempLevel % 3 == 0:
+			self.currLevel += 1
 
 class Player(object):
 	def __init__(self,name = "Adder",color = 0,level = Level()):
 		self.name = name
 		self.color = color
 		self.level = level
+		self.totalScore = 0
 		
 	def changeColor(self,newColor):
 		self.color = newColor

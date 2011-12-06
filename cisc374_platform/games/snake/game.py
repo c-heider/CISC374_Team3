@@ -135,6 +135,38 @@ class Length(spyral.sprite.Sprite):
 			self.rect.midtop = (geom['lengthx'],geom['text_height_bottom'] + (BLOCK_SIZE/4))
 			self.oldVal = self.val
 
+class LevelBox(spyral.sprite.Sprite):
+	def __init__(self):
+		spyral.sprite.Sprite.__init__(self)
+		self.images = images['level']
+		self.render(0)
+		self.rect.center = (0, 0)
+
+	def render(self, num):
+		self.image = self.images[num]
+
+class ScoreBox(spyral.sprite.Sprite):
+	def __init__(self):
+		spyral.sprite.Sprite.__init__(self)
+		self.images = images['score']
+		self.currentImage = 0
+		self.render(0, 0, 0)
+		self.rect.center = (0, 0)
+
+
+	def render(self, num, levelScore, totalScore):
+		if num > 1:
+			self.levelValImage = fonts['score'].render(str(levelScore),True,colors['bodynode'])
+			img = self.images[num].copy()
+			img.blit(self.levelValImage, (geom['score_x'], geom['level_score_y']))
+			self.image = img
+		if num > 2 :
+			self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
+			img.blit(self.totalValImage, (geom['score_x'], geom['total_score_y']))
+			self.image = img
+		else:
+			self.image = self.images[num]
+
 class Operator(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head,level):
 		spyral.sprite.Sprite.__init__(self)
@@ -350,8 +382,27 @@ class Game(spyral.scene.Scene):
 		self.expandIndex = 0
 		self.oldFrac = None
 		self.newInt = 0
+		self.oldLevel = -1
+		self.oldTempLevel = 0
+		self.levelBox = LevelBox()
+		self.group.add(self.levelBox)
+		self.levelScore = 0
+		self.scoreFlag = False
+		self.scoreBox = ScoreBox()
+		self.group.add(self.scoreBox)
 
-		
+
+	def addToScore(self,value):
+		if value == '+' or value == '-':
+			self.levelScore += 100
+		elif value == '*':
+			self.levelScore += 200
+		elif value == '/':
+			self.levelScore += 300
+		elif int(value) < 10:
+			self.levelScore += 100
+		else:
+			self.levelScore += 150
 	
 			
 	#get two empty spaces and corresponding directions for expansion. Return False if such do not exist
@@ -834,7 +885,30 @@ class Game(spyral.scene.Scene):
 			else:
 				f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
 
-		if self.eating == False and self.clearing == False:
+		#display score
+		if self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0:
+			self.scoreFlag = True
+			for event in pygame.event.get():
+				if event.type == pygame.KEYDOWN:
+					self.scoreBox.currentImage += 1
+			if self.scoreBox.currentImage > 3:
+				self.levelScore = 0
+				self.currentImage = 0
+				self.oldTempLevel = self.player.level.tempLevel
+				self.scoreBox.render(self.currentImage, 0, 0)
+				self.scoreFlag = False
+			else:
+				self.scoreBox.render(self.scoreBox.currentImage, self.levelScore, self.player.totalScore)
+		#display level
+		if self.player.level.currLevel > self.oldLevel and not self.scoreFlag:
+			self.levelBox.render(self.player.level.currLevel+1)
+			for event in pygame.event.get():
+				if event.type == pygame.KEYDOWN:
+					self.oldLevel = self.player.level.currLevel
+					self.levelBox.render(0)
+
+
+		elif self.eating == False and self.clearing == False:
 			self.count += 1
 			self.count %= TICKS_PER_MOVE		
 
@@ -976,6 +1050,8 @@ class Game(spyral.scene.Scene):
 							self.snake.nodes.append(newNode)
 							self.group.add(newNode)
 
+							self.addToScore(f.val)
+
 
 
 							itemName = type(f).__name__
@@ -1051,6 +1127,8 @@ class Game(spyral.scene.Scene):
 				#check to see if the goal is reached 
 				if self.goal.isReached(self.snake.nodes):
 					self.player.level.increase()
+					self.player.totalScore += self.levelScore
+					self.scoreBox.currentImage = 1
 					self.goal.kill()
 					self.goal = Goal(self.player.level)
 					self.group.add(self.goal)
@@ -1090,6 +1168,8 @@ class Game(spyral.scene.Scene):
 				self.clearing = False
 				self.snake.lastType = 'Operator'
 			return
+
+		
 
 
 
@@ -1163,6 +1243,20 @@ def init():
 		images['tiles'].append(spyral.util.load_image('games/snake/Images/Other/CharSelect/'+strings['char_sources'][i]+'.png'))
 	images['colorSelectTile'] = spyral.util.load_image('games/snake/Images/Other/CharSelect/ColorSelect.png')
 	images['arrows'] = spyral.util.load_image('games/snake/Images/Other/CharSelect/Arrows.png')
+
+	#load level images
+	images['level'] = []
+	images['clear'] = spyral.util.load_image('games/snake/Images/Other/blank.png')
+	images['level'].append(images['clear'].copy())
+	for i in range(3):
+		images['level'].append( spyral.util.load_image('games/snake/Images/Other/Level' + str(i+1) +'.png'))
+
+	#load scoreBox images
+	images['score'] = []
+	images['score'].append(images['clear'])
+	for i in range(3):
+		images['score'].append( spyral.util.load_image('games/snake/Images/Other/ScoreBox' + str(i) +'.png'))
+	
 	
 	images['tablet_instructions'] = fonts
 	
@@ -1172,6 +1266,7 @@ def init():
 	fonts['length'] = pygame.font.SysFont(None,BLOCK_SIZE/2)
 	fonts['expression'] = pygame.font.Font('games/snake/MangaTemple.ttf',BLOCK_SIZE/2)
 	fonts['goal'] = fonts['expression']
+	fonts['score'] = pygame.font.Font('games/snake/MangaTemple.ttf', BLOCK_SIZE)
 	
 	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
 	fonts['menu_character'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
@@ -1187,6 +1282,9 @@ def init():
 	geom['goalx'] = (WIDTH - BLOCK_SIZE*2)
 	geom['text_height'] = 0
 	geom['text_height_bottom'] = HEIGHT - BLOCK_SIZE
+	geom['level_score_y'] = HEIGHT - 500
+	geom['total_score_y'] = HEIGHT - 300
+	geom['score_x'] = WIDTH/2
 	
 	geom['menu_start'] = pygame.Rect(300, 240, 200, 48)
 	geom['menu_character'] = pygame.Rect(300, 325, 200, 70)

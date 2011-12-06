@@ -848,7 +848,7 @@ class Game(spyral.scene.Scene):
 
 				#get keyboard input
 				newDirection = self.snake.direction
-				for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
+				for event in pygame.event.get():
 					if event.type == pygame.KEYDOWN:
 						if (event.key == pygame.K_e or event.key ==  pygame.K_KP1):
 							if (len(self.snake.nodes)==3 and self.snake.nodes[1].value == "/"
@@ -1120,6 +1120,7 @@ def init():
 	strings['characters'] = ["< Adder Adam >", "< Sal Amander >", "< Darryl Diamondback >", "< Colonel Caterpillar >"]
 	strings['char_sources'] = ["Adder","Anaconda","Diamondback","Caterpillar"]
 	
+	images['tablet'] = spyral.util.load_image(path.join('games/snake/Images/Other','Tablet.png'))
 	images['background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'background.png'))
 	images['menu_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen.png'))
 	
@@ -1161,6 +1162,8 @@ def init():
 		images['tiles'].append(spyral.util.load_image('games/snake/Images/Other/CharSelect/'+strings['char_sources'][i]+'.png'))
 	images['colorSelectTile'] = spyral.util.load_image('games/snake/Images/Other/CharSelect/ColorSelect.png')
 	images['arrows'] = spyral.util.load_image('games/snake/Images/Other/CharSelect/Arrows.png')
+	
+	images['tablet_instructions'] = fonts
 	
 	fonts['node'] = pygame.font.SysFont(None,3*BLOCK_SIZE/5)
 	fonts['number'] = pygame.font.SysFont(None,BLOCK_SIZE)
@@ -1206,6 +1209,7 @@ def init():
 	
 	geom['total_colors'] = 3
 	
+	images['tablet_instructions'] = fonts['goal'].render("Press Any Key To Continue",True,(0,0,0))
 
 	#images['head'] = pygame.image.load("games/snake/Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])

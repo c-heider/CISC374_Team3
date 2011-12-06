@@ -166,6 +166,38 @@ class Arrows(spyral.sprite.Sprite):
 		self.rect.center = self.positions[self.curPos]
 		
 
+class Tablet(spyral.scene.Scene):
+	def __init__(self):
+		spyral.scene.Scene.__init__(self)
+		
+		self.root_camera = spyral.director.get_camera()
+		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT))
+		self.group = spyral.sprite.Group(self.camera)
+		
+		center = self.camera.get_rect().center
+		
+		instructions = spyral.sprite.Sprite()
+		instructions.image = images['tablet_instructions']
+		instructions.rect.midtop = (center[0],HEIGHT-int(HEIGHT/7))
+		
+		tab = Tile(center,images['tablet'])
+		self.group.add(tab,instructions)
+		
+	def on_enter(self):
+		bg = spyral.util.new_surface((WIDTH,HEIGHT))
+		bg.fill((255,255,255))
+		self.camera.set_background(bg)
+		
+	def render(self):
+		self.group.draw()   # draw group of sprites
+		self.root_camera.draw()  # draw the current frame
+	
+	def update(self, tick):
+		for event in pygame.event.get():
+			if event.type == pygame.KEYDOWN:
+				spyral.director.pop()
+		pygame.event.clear()
+		
 class Menu(spyral.scene.Scene):
 	"""Menu Scene shows the game title, buttons to start game, select
 	characters or view achievements."""
@@ -207,7 +239,7 @@ class Menu(spyral.scene.Scene):
 	def update(self, tick):
 		"""Update the current scene based on user input"""
 		
-		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
+		for event in pygame.event.get():
 			
 			if event.type == pygame.KEYDOWN:
 				if (event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2):
@@ -313,7 +345,7 @@ class CharacterSelect(spyral.scene.Scene):
 		"""Update the current scene based on user input"""
 		
 		# get events (keyboard, mouse, etc.)
-		for event in pygame.event.get([pygame.KEYUP, pygame.KEYDOWN]):
+		for event in pygame.event.get():
 			
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_DOWN or event.key ==  pygame.K_KP2:
@@ -371,6 +403,7 @@ def launch():
 	#this function is in game.py
 	init()
 	spyral.director.push(Menu(player.Player()))
+	spyral.director.push(Tablet())
 	
 
 	pygame.mouse.set_visible(False)

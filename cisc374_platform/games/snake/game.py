@@ -1205,11 +1205,11 @@ def init():
 	images['menu_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen.png'))
 	images['CharSelect_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen1.png'))
 	
-	images['menu_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'menu_title.png'))
-	images['character_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'character_title.png'))
-	images['button_normal'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'Button0.png'))
-	images['button_highlight'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'Button2.png'))
-	images['color_select'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'color_select.png'))
+	#images['menu_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'menu_title.png'))
+	#images['character_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'character_title.png'))
+	#images['button_normal'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'Button0.png'))
+	#images['button_highlight'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'Button2.png'))
+	#images['color_select'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'color_select.png'))
 
 	images['button_start'] = (spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Play0.png')),
 							  spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Play1.png')))
@@ -1268,14 +1268,14 @@ def init():
 	fonts['goal'] = fonts['expression']
 	fonts['score'] = pygame.font.Font('games/snake/MangaTemple.ttf', BLOCK_SIZE)
 	
-	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
-	fonts['menu_character'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 2)
-	fonts['menu_unlock'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 3)
-	fonts['menu_quit'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
-	fonts['character_unlock'] = pygame.font.SysFont(None,images['button_normal'].get_height() / 4)
-	fonts['character_back'] = pygame.font.SysFont(None,2*images['button_normal'].get_height() / 3)
-	fonts['character_name'] = pygame.font.Font('games/snake/MangaTemple.ttf',images['button_normal'].get_height() / 3)
-	fonts['character_color'] = pygame.font.Font('games/snake/MangaTemple.ttf',images['button_normal'].get_height() / 3)
+	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_start'][0].get_height() / 3)
+	fonts['menu_character'] = pygame.font.SysFont(None,images['button_start'][0].get_height() / 2)
+	fonts['menu_unlock'] = pygame.font.SysFont(None,images['button_start'][0].get_height() / 3)
+	fonts['menu_quit'] = pygame.font.SysFont(None,2*images['button_start'][0].get_height() / 3)
+	fonts['character_unlock'] = pygame.font.SysFont(None,images['button_start'][0].get_height() / 4)
+	fonts['character_back'] = pygame.font.SysFont(None,2*images['button_start'][0].get_height() / 3)
+	fonts['character_name'] = pygame.font.Font('games/snake/MangaTemple.ttf',images['button_start'][0].get_height() / 3)
+	fonts['character_color'] = pygame.font.Font('games/snake/MangaTemple.ttf',images['button_start'][0].get_height() / 3)
 
 	geom['lengthx'] = WIDTH - BLOCK_SIZE*2
 	geom['expressionx'] = 0
@@ -1297,14 +1297,14 @@ def init():
 	geom['menu_quit_y'] = geom['menu_character_y'] + images['button_charselect'][0].get_height()
 	
 	geom['character_title_y'] = HEIGHT / 6
-	geom['character_unlock_x'] = WIDTH * 2/100
-	geom['character_unlock_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
+	#geom['character_unlock_x'] = WIDTH * 2/100
+	#geom['character_unlock_y'] = 13*HEIGHT/14 - images['button_normal'].get_height()/2
 	geom['character_back_x'] = 40
 	geom['character_back_y'] = geom['menu_quit_y']
 	geom['character_image_y'] = HEIGHT/2 
 	geom['character_name_y'] = HEIGHT/2 + images['characters'][0][0].get_height()
 	geom['character_color_y'] = geom['character_name_y'] + images['tiles'][0].get_height()
-	geom['character_color_select_y'] = geom['character_color_y'] + images['color_select'].get_height()
+	#geom['character_color_select_y'] = geom['character_color_y'] + images['color_select'].get_height()
 	
 	geom['total_colors'] = 3
 	

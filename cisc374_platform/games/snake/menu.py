@@ -334,7 +334,7 @@ class CharacterSelect(spyral.scene.Scene):
 		self.group.add(self.tiles, self.character, self.character_color, self.arrows)
 
 	def on_enter(self):
-		self.camera.set_background(images['menu_background'])
+		self.camera.set_background(images['CharSelect_background'])
 	
 	def render(self):
 		"""Render the current scene"""

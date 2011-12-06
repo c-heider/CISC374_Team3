@@ -1123,6 +1123,7 @@ def init():
 	images['tablet'] = spyral.util.load_image(path.join('games/snake/Images/Other','Tablet.png'))
 	images['background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'background.png'))
 	images['menu_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen.png'))
+	images['CharSelect_background'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'TitleScreen1.png'))
 	
 	images['menu_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'menu_title.png'))
 	images['character_title'] = spyral.util.load_image(path.join('games/snake/Images/Other', 'character_title.png'))

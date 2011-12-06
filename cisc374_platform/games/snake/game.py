@@ -152,20 +152,26 @@ class ScoreBox(spyral.sprite.Sprite):
 		self.currentImage = 0
 		self.render(0, 0, 0)
 		self.rect.center = (0, 0)
+		self.img1 = None
+		self.img2 = None
 
 
 	def render(self, num, levelScore, totalScore):
-		if num > 1:
-			self.levelValImage = fonts['score'].render(str(levelScore),True,colors['bodynode'])
-			img = self.images[num].copy()
-			img.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
-			self.image = img
-			if num > 2 :
-				self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
-				img.blit(self.totalValImage, (geom['score_x'] - self.totalValImage.get_width(), geom['total_score_y']))
-				self.image = img
+		if num == 2:
+			self.image = self.img1
+		elif num == 3 :
+			self.image = self.img2
 		else:
 			self.image = self.images[num]
+			self.levelValImage = fonts['score'].render(str(levelScore),True,colors['bodynode'])
+			self.img1 = self.images[2].copy()
+			self.img1.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
+
+			self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
+			self.img2 = self.images[3].copy()
+			self.img2.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
+			self.img2.blit(self.totalValImage, (geom['score_x'] - self.totalValImage.get_width(), geom['total_score_y']))
+			
 
 class Operator(spyral.sprite.Sprite):
 	def __init__(self,foodItems,snake,head,level):

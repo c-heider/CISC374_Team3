@@ -158,12 +158,12 @@ class ScoreBox(spyral.sprite.Sprite):
 		if num > 1:
 			self.levelValImage = fonts['score'].render(str(levelScore),True,colors['bodynode'])
 			img = self.images[num].copy()
-			img.blit(self.levelValImage, (geom['score_x'], geom['level_score_y']))
+			img.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
 			self.image = img
-		if num > 2 :
-			self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
-			img.blit(self.totalValImage, (geom['score_x'], geom['total_score_y']))
-			self.image = img
+			if num > 2 :
+				self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
+				img.blit(self.totalValImage, (geom['score_x'] - self.totalValImage.get_width(), geom['total_score_y']))
+				self.image = img
 		else:
 			self.image = self.images[num]
 
@@ -1282,9 +1282,9 @@ def init():
 	geom['goalx'] = (WIDTH - BLOCK_SIZE*2)
 	geom['text_height'] = 0
 	geom['text_height_bottom'] = HEIGHT - BLOCK_SIZE
-	geom['level_score_y'] = HEIGHT - 500
-	geom['total_score_y'] = HEIGHT - 300
-	geom['score_x'] = WIDTH/2
+	geom['level_score_y'] = HEIGHT - 500 - BLOCK_SIZE/2
+	geom['total_score_y'] = HEIGHT - 300 - BLOCK_SIZE/2
+	geom['score_x'] = 3*WIDTH/4
 	
 	geom['menu_start'] = pygame.Rect(300, 240, 200, 48)
 	geom['menu_character'] = pygame.Rect(300, 325, 200, 70)

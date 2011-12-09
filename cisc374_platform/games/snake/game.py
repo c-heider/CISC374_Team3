@@ -149,6 +149,8 @@ class LevelBox(spyral.sprite.Sprite):
 		self.images = images['level']
 		self.render(0)
 		self.rect.center = (0, 0)
+		
+		self._set_layer('level')
 
 	def render(self, num):
 		self.image = self.images[num]
@@ -175,6 +177,8 @@ class PopUp(spyral.sprite.Sprite):
 		if self. x == 0:
 			self.x = BLOCK_SIZE
 		self.game = game
+		
+		self._set_layer('pop')
 		self.render()
 
 	def render(self):
@@ -198,6 +202,8 @@ class ScoreBox(spyral.sprite.Sprite):
 		self.rect.center = (0, 0)
 		self.img1 = None
 		self.img2 = None
+		
+		self._set_layer('score')
 
 
 	def render(self, num, levelScore, totalScore):
@@ -232,8 +238,8 @@ class Operator(spyral.sprite.Sprite):
 		self.image = self.image1
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
-	def render(self, numNext, divLastOp):
-		if numNext or (divLastOp and (self.val == '/' or self.val == '*')):
+	def render(self, numNext, divLastOp, snakeLength):
+		if numNext or (divLastOp and (self.val == '/' or self.val == '*')) or snakeLength == 29:
 			self.image = self.image1
 		else:
 			self.image = self.image0
@@ -270,8 +276,8 @@ class Number(spyral.sprite.Sprite):
 #		self.image = fonts['number'].render("%d" % self.val,True,colors['number'])
 		self.rect.center = (self.location[0]*BLOCK_SIZE + BLOCK_SIZE/2,self.location[1]*BLOCK_SIZE + BLOCK_SIZE/2)
 
-	def render(self, numNext, divLastOp):
-		if numNext:
+	def render(self, numNext, divLastOp, snakeLength):
+		if numNext and snakeLength < 29:
 			self.image = self.image0
 		else:
 			self.image = self.image1
@@ -365,7 +371,7 @@ class Game(spyral.scene.Scene):
 
 		self.clock.ticks_per_second = TICKS_PER_SECOND
 		self.root_camera = spyral.director.get_camera()
-		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT),layers=['other','food','operatorNodes','numberNodes','head'])		
+		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT),layers=['other','food','operatorNodes','numberNodes','head','pop','level','score'])		
 		self.group = spyral.sprite.Group(self.camera)
 
 	def initApples(self):
@@ -933,9 +939,9 @@ class Game(spyral.scene.Scene):
 		#render apples
 		for f in self.foodItems:
 			if len(self.snake.nodes) < 3:
-				f.render(self.snake.lastType == 'Operator', False)
+				f.render(self.snake.lastType == 'Operator', False, len(self.snake.nodes))
 			else:
-				f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
+				f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/", len(self.snake.nodes))
 
 		#display score
 		if self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0:
@@ -1052,9 +1058,9 @@ class Game(spyral.scene.Scene):
 							#render apples
 							for f in self.foodItems:
 								if len(self.snake.nodes) < 3:
-									f.render(self.snake.lastType == 'Operator', False)
+									f.render(self.snake.lastType == 'Operator', False, len(self.snake.nodes))
 								else:
-									f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
+									f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/", len(self.snake.nodes))
 						pygame.event.clear()
 						self.count = TICKS_PER_MOVE - 1
 						
@@ -1095,6 +1101,8 @@ class Game(spyral.scene.Scene):
 					#test for target
 					found = False
 					for f in self.foodItems:
+						if len(self.snake.nodes) >= 29:
+							break
 						if f.location == newloc and type(f).__name__ != self.snake.lastType and self.moving and self.clearing == False:
 							if (f.val == "/" or f.val == "*") and self.snake.nodes[len(self.snake.nodes)-2].value == "/":
 								continue

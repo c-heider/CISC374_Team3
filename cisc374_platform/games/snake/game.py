@@ -23,6 +23,14 @@ directions['down'] = 2
 directions['right'] = 1
 directions['left'] = 3
 
+scores = {}
+scores['+'] = 100
+scores['-'] = 100
+scores['*'] = 200
+scores['/'] = 300
+scores['<10'] = 100
+scores['>10'] = 150
+
 # locations are in terms of the discrete grid, with indexing beginning at 0. top-left is origin.
 # pixel_x is grid_x*BLOCK_SIZE + BLOCK_SIZE/2, which corresponds to the centers of sprites
 
@@ -144,6 +152,42 @@ class LevelBox(spyral.sprite.Sprite):
 
 	def render(self, num):
 		self.image = self.images[num]
+
+class PopUp(spyral.sprite.Sprite):
+	def __init__(self, game, val, pos):
+		spyral.sprite.Sprite.__init__(self)
+		self.secondsVisible = 2
+		self.framesVisible = self.secondsVisible * TICKS_PER_SECOND
+		self.currentFrame = 0
+		if val == 'roll':
+			self.value = str(game.rollsLeft) + ' ROLLS LEFT'
+		else:
+			if val == '+' or val == '-' or val == '*' or val == '/':
+				self.value = '+ ' + str(scores[val])
+			elif int(val) < 10:
+				self.value = '+ ' + str(scores['<10'])
+			else:
+				self.value = '+ ' + str(scores['>10'])
+		
+		self.image = fonts['pop_up'].render(self.value,True,colors['pop_up'])
+		self.x = pos[0]*BLOCK_SIZE
+		self.y = pos[1]*BLOCK_SIZE
+		if self. x == 0:
+			self.x = BLOCK_SIZE
+		self.game = game
+		self.render()
+
+	def render(self):
+		if self.currentFrame == self.framesVisible:
+			self.value = ''
+			self.image = fonts['pop_up'].render(self.value,True,colors['pop_up'])
+			self.rect.midtop = (self.x,self.y)
+			self.currentFrame += 1
+		elif self.currentFrame < self.framesVisible:
+			self.currentFrame += 1
+			self.y -= 1
+			self.rect.midtop = (self.x,self.y)
+		
 
 class ScoreBox(spyral.sprite.Sprite):
 	def __init__(self):
@@ -396,20 +440,22 @@ class Game(spyral.scene.Scene):
 		self.scoreFlag = False
 		self.scoreBox = ScoreBox()
 		self.group.add(self.scoreBox)
+		self.rollsLeft = 10
+		self.popUps = []
+
+	def addPopUp(self, val, pos):
+		newPopUp = PopUp(self, val, pos)
+		self.popUps.append(newPopUp)
+		self.group.add(newPopUp)
 
 
 	def addToScore(self,value):
-		if value == '+' or value == '-':
-			self.levelScore += 100
-		elif value == '*':
-			self.levelScore += 200
-		elif value == '/':
-			self.levelScore += 300
+		if value == '+' or value == '-' or value == '*' or value == '/':
+			self.levelScore += scores[value]
 		elif int(value) < 10:
-			self.levelScore += 100
+			self.levelScore += scores['<10']
 		else:
-			self.levelScore += 150
-	
+			self.levelScore += scores['>10']
 			
 	#get two empty spaces and corresponding directions for expansion. Return False if such do not exist
 	def findExpansion(self):
@@ -996,19 +1042,23 @@ class Game(spyral.scene.Scene):
 							self.moving = False
 					
 					if event.type == pygame.KEYDOWN and (event.key == pygame.K_r or event.key ==  pygame.K_KP7):
-						self.foodItems = self.clearApples(self.foodItems)
-						self.foodItems = self.initApples()
-						for i in self.foodItems:
-							self.group.add(i)
-						
-						#render apples
-						for f in self.foodItems:
-							if len(self.snake.nodes) < 3:
-								f.render(self.snake.lastType == 'Operator', False)
-							else:
-								f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
+						if self.rollsLeft > 0:
+							self.foodItems = self.clearApples(self.foodItems)
+							self.foodItems = self.initApples()
+							self.rollsLeft -= 1
+							for i in self.foodItems:
+								self.group.add(i)
+								
+							#render apples
+							for f in self.foodItems:
+								if len(self.snake.nodes) < 3:
+									f.render(self.snake.lastType == 'Operator', False)
+								else:
+									f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/")
 						pygame.event.clear()
 						self.count = TICKS_PER_MOVE - 1
+						
+						self.addPopUp('roll', self.snake.location)
 						
 					
 				pygame.event.clear()
@@ -1057,6 +1107,7 @@ class Game(spyral.scene.Scene):
 							self.group.add(newNode)
 
 							self.addToScore(f.val)
+							self.addPopUp(str(f.val), self.snake.location)
 
 
 
@@ -1175,6 +1226,10 @@ class Game(spyral.scene.Scene):
 				self.snake.lastType = 'Operator'
 			return
 
+		#render PopUps
+		for p in self.popUps:
+			p.render()
+
 		
 
 
@@ -1191,6 +1246,7 @@ def init():
 	colors['length'] = (0,0,0)
 	colors['expression'] = (0,0,0)
 	colors['goal'] = (0,0,0)
+	colors['pop_up'] = (0,0,0)
 	
 	colors['menu_start'] = (255,255,255)
 	colors['menu_character'] = (231,237,26)
@@ -1273,6 +1329,7 @@ def init():
 	fonts['expression'] = pygame.font.Font('games/snake/MangaTemple.ttf',BLOCK_SIZE/2)
 	fonts['goal'] = fonts['expression']
 	fonts['score'] = pygame.font.Font('games/snake/MangaTemple.ttf', BLOCK_SIZE)
+	fonts['pop_up'] = fonts['expression']
 	
 	fonts['menu_start'] = pygame.font.SysFont(None,2*images['button_start'][0].get_height() / 3)
 	fonts['menu_character'] = pygame.font.SysFont(None,images['button_start'][0].get_height() / 2)

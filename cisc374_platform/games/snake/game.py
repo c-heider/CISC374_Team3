@@ -163,6 +163,8 @@ class PopUp(spyral.sprite.Sprite):
 		self.currentFrame = 0
 		if val == 'roll':
 			self.value = str(game.rollsLeft) + ' ROLLS LEFT'
+		elif val == 'zero':
+			self.value = '- ' + str(game.levelScore)
 		else:
 			if val == '+' or val == '-' or val == '*' or val == '/':
 				self.value = '+ ' + str(scores[val])
@@ -177,7 +179,6 @@ class PopUp(spyral.sprite.Sprite):
 		if self. x == 0:
 			self.x = BLOCK_SIZE
 		self.game = game
-		
 		self._set_layer('pop')
 		self.render()
 
@@ -368,7 +369,6 @@ class Game(spyral.scene.Scene):
 
 		#Init Images
 		self.player = player
-
 		self.clock.ticks_per_second = TICKS_PER_SECOND
 		self.root_camera = spyral.director.get_camera()
 		self.camera = self.root_camera.make_child(virtual_size = (WIDTH,HEIGHT),layers=['other','food','operatorNodes','numberNodes','head','pop','level','score'])		
@@ -443,9 +443,9 @@ class Game(spyral.scene.Scene):
 		self.levelBox = LevelBox()
 		self.group.add(self.levelBox)
 		self.levelScore = 0
-		self.scoreFlag = False
 		self.scoreBox = ScoreBox()
 		self.group.add(self.scoreBox)
+		self.scoreFlag = False
 		self.rollsLeft = 10
 		self.popUps = []
 
@@ -944,8 +944,7 @@ class Game(spyral.scene.Scene):
 				f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/", len(self.snake.nodes))
 
 		#display score
-		if self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0:
-			self.scoreFlag = True
+		if self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0 and self.scoreFlag:
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					self.scoreBox.currentImage += 1
@@ -954,12 +953,13 @@ class Game(spyral.scene.Scene):
 				self.currentImage = 0
 				self.oldTempLevel = self.player.level.tempLevel
 				self.scoreBox.render(self.currentImage, 0, 0)
-				self.scoreFlag = False
 			else:
 				self.scoreBox.render(self.scoreBox.currentImage, self.levelScore, self.player.totalScore)
 		#display level
-		if self.player.level.currLevel > self.oldLevel and not self.scoreFlag:
+		if self.player.level.currLevel > self.oldLevel:
+			self.scoreFlag = True
 			self.levelBox.render(self.player.level.currLevel+1)
+			self.oldTempLevel = self.player.level.tempLevel
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					self.oldLevel = self.player.level.currLevel
@@ -990,6 +990,7 @@ class Game(spyral.scene.Scene):
 								self.expanding = True
 								return
 						if (event.key == pygame.K_q or event.key ==  pygame.K_KP9):
+							self.scoreFlag = False
 							spyral.director.pop()
 								
 						if (event.key == pygame.K_c or event.key ==  pygame.K_KP3) and (len(self.snake.nodes) > 1) and len(self.snake.nodes)%2 == 1:
@@ -1197,6 +1198,9 @@ class Game(spyral.scene.Scene):
 					self.goal.kill()
 					self.goal = Goal(self.player.level)
 					self.group.add(self.goal)
+				else:
+					self.addPopUp('zero',self.snake.location)
+					self.levelScore = 0
 
 			#step each Sprite towards its new location
 			if self.count != 0 and self.eating == False:
@@ -1232,11 +1236,16 @@ class Game(spyral.scene.Scene):
 			if len(self.snake.nodes) == 0:
 				self.clearing = False
 				self.snake.lastType = 'Operator'
+				self.addPopUp('zero', self.snake.location)
+				self.levelScore = 0
 			return
 
 		#render PopUps
 		for p in self.popUps:
-			p.render()
+			if p.value == '':
+				self.popUps.pop(self.popUps.index(p))
+			else:
+				p.render()
 
 		
 

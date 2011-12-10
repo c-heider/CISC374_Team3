@@ -162,7 +162,10 @@ class PopUp(spyral.sprite.Sprite):
 		self.framesVisible = self.secondsVisible * TICKS_PER_SECOND
 		self.currentFrame = 0
 		if val == 'roll':
-			self.value = str(game.rollsLeft) + ' ROLLS LEFT'
+			if game.rollsLeft != 1:
+				self.value = str(game.rollsLeft) + ' ROLLS LEFT'
+			else:
+				self.value = str(game.rollsLeft) + ' ROLL LEFT'
 		elif val == 'zero':
 			self.value = '- ' + str(game.levelScore)
 		else:
@@ -1063,7 +1066,8 @@ class Game(spyral.scene.Scene):
 								else:
 									f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/", len(self.snake.nodes))
 						pygame.event.clear()
-						self.count = TICKS_PER_MOVE - 1
+						#self.count = TICKS_PER_MOVE - 1
+						
 						
 						self.addPopUp('roll', self.snake.location)
 						

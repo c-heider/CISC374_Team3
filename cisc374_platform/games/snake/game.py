@@ -147,8 +147,8 @@ class LevelBox(spyral.sprite.Sprite):
 	def __init__(self):
 		spyral.sprite.Sprite.__init__(self)
 		self.images = images['level']
-		self.render(0)
-		self.rect.center = (0, 0)
+		self.render(1)
+		self.rect.center = (WIDTH/2, HEIGHT/2)
 		
 		self._set_layer('level')
 
@@ -978,6 +978,8 @@ class Game(spyral.scene.Scene):
                                 self.rollsLeft = 10
 				self.oldTempLevel = self.player.level.tempLevel
                                 self.scoreBox.image = images['blank']
+                                if self.player.level.currLevel > self.oldLevel:
+                                    self.levelBox.render(self.player.level.currLevel+1)
 			else:
 				self.scoreBox.render(self.scoreBox.currentImage)
 		#display level

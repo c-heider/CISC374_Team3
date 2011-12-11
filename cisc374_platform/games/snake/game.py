@@ -126,8 +126,8 @@ class Goal(spyral.sprite.Sprite):
 		if len(snakeNodes) == 1:
 			return self.val == snakeNodes[0].value
 		else:
-			snakeFrac = fractions.Fraction(snakeNodes[0],snakeNodes[2])
-			return (self.val - 1 < snakeFrac and snakeFrac < self.val + 1)
+			snakeFrac = fractions.Fraction(snakeNodes[0].value,snakeNodes[2].value)
+			return ((self.val - 1) < snakeFrac and snakeFrac < (self.val + 1))
 
 class Length(spyral.sprite.Sprite):
 	def __init__(self):

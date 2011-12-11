@@ -957,8 +957,6 @@ class Game(spyral.scene.Scene):
 
                 #pop if they beat the game
                 if self.player.level.tempLevel == 9:
-                        self.final = Final(self.player.totalScore)
-                        self.group.add(self.final)
                         for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					self.scoreFlag = False
@@ -969,7 +967,8 @@ class Game(spyral.scene.Scene):
 					spyral.director.pop()
 
 		#display score
-		elif self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0:
+		#elif self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0:
+                elif self.scoreFlag:
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					self.scoreBox.currentImage += 1
@@ -978,13 +977,19 @@ class Game(spyral.scene.Scene):
                                 self.rollsLeft = 10
 				self.oldTempLevel = self.player.level.tempLevel
                                 self.scoreBox.image = images['blank']
-                                if self.player.level.currLevel > self.oldLevel:
+                                self.player.level.increase()
+                                self.scoreFlag = False
+                                #stop flicker
+                                if self.player.level.tempLevel == 9:
+                                    self.final = Final(self.player.totalScore)
+                                    self.group.add(self.final)
+                                elif self.player.level.currLevel > self.oldLevel:
                                     self.levelBox.render(self.player.level.currLevel+1)
 			else:
 				self.scoreBox.render(self.scoreBox.currentImage)
 		#display level
 		elif self.player.level.currLevel > self.oldLevel:
-			self.scoreFlag = True
+			#self.scoreFlag = True
 			self.levelBox.render(self.player.level.currLevel+1)
 			self.oldTempLevel = self.player.level.tempLevel
 			for event in pygame.event.get():
@@ -1220,7 +1225,8 @@ class Game(spyral.scene.Scene):
 				self.collapsing = False
 				#check to see if the goal is reached 
 				if self.goal.isReached(self.snake.nodes):
-					self.player.level.increase()
+					#self.player.level.increase()
+                                        self.scoreFlag = True
 					self.player.totalScore += self.levelScore
 					self.scoreBox = ScoreBox(self.levelScore, self.player.totalScore)
                                         self.levelScore = 0

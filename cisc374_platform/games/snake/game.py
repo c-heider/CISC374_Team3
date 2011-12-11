@@ -155,6 +155,16 @@ class LevelBox(spyral.sprite.Sprite):
 	def render(self, num):
 		self.image = self.images[num]
 
+class Final(spyral.sprite.Sprite):
+	def __init__(self, totalScore):
+		spyral.sprite.Sprite.__init__(self)
+		self.image = images['Final'].copy()
+		self.rect.center = (WIDTH/2, HEIGHT/2)
+                self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
+                self.image.blit(self.totalValImage, (geom['score_x'] - self.totalValImage.get_width(), geom['total_score_y']))
+		
+		self._set_layer('final')
+
 class PopUp(spyral.sprite.Sprite):
 	def __init__(self, game, val, pos):
 		spyral.sprite.Sprite.__init__(self)
@@ -198,33 +208,34 @@ class PopUp(spyral.sprite.Sprite):
 		
 
 class ScoreBox(spyral.sprite.Sprite):
-	def __init__(self):
+	def __init__(self, levelScore, totalScore):
 		spyral.sprite.Sprite.__init__(self)
 		self.images = images['score']
 		self.currentImage = 0
-		self.render(0, 0, 0)
-		self.rect.center = (0, 0)
-		self.img1 = None
-		self.img2 = None
+		self.render(0)
+		self.rect.center = (WIDTH/2, HEIGHT/2)
+
+		#blit images
+                self.levelValImage = fonts['score'].render(str(levelScore),True,colors['bodynode'])
+                self.img1 = self.images[1].copy()
+                self.img1.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
+                
+		self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
+                self.img2 = self.images[2].copy()
+                self.img2.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
+                self.img2.blit(self.totalValImage, (geom['score_x'] - self.totalValImage.get_width(), geom['total_score_y']))
+		
 		
 		self._set_layer('score')
 
 
-	def render(self, num, levelScore, totalScore):
-		if num == 2:
+	def render(self, num):
+		if num == 1:
 			self.image = self.img1
-		elif num == 3 :
+		elif num == 2 :
 			self.image = self.img2
 		else:
 			self.image = self.images[num]
-			self.levelValImage = fonts['score'].render(str(levelScore),True,colors['bodynode'])
-			self.img1 = self.images[2].copy()
-			self.img1.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
-
-			self.totalValImage = fonts['score'].render(str(totalScore),True,colors['bodynode'])
-			self.img2 = self.images[3].copy()
-			self.img2.blit(self.levelValImage, (geom['score_x'] - self.levelValImage.get_width(), geom['level_score_y']))
-			self.img2.blit(self.totalValImage, (geom['score_x'] - self.totalValImage.get_width(), geom['total_score_y']))
 			
 
 class Operator(spyral.sprite.Sprite):
@@ -446,8 +457,6 @@ class Game(spyral.scene.Scene):
 		self.levelBox = LevelBox()
 		self.group.add(self.levelBox)
 		self.levelScore = 0
-		self.scoreBox = ScoreBox()
-		self.group.add(self.scoreBox)
 		self.scoreFlag = False
 		self.rollsLeft = 10
 		self.popUps = []
@@ -946,20 +955,33 @@ class Game(spyral.scene.Scene):
 			else:
 				f.render(self.snake.lastType == 'Operator', self.snake.nodes[len(self.snake.nodes)-2].value == "/", len(self.snake.nodes))
 
+                #pop if they beat the game
+                if self.player.level.tempLevel == 9:
+                        self.final = Final(self.player.totalScore)
+                        self.group.add(self.final)
+                        for event in pygame.event.get():
+				if event.type == pygame.KEYDOWN:
+					self.scoreFlag = False
+                                        self.player.totalScore = 0
+                                        self.player.level.currLevel = 0
+                                        self.player.level.tempLevel = 0
+                                        self.levelScore = 0
+					spyral.director.pop()
+
 		#display score
-		if self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0 and self.scoreFlag:
+		elif self.player.level.tempLevel > self.oldTempLevel and self.oldLevel >= 0:
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					self.scoreBox.currentImage += 1
-			if self.scoreBox.currentImage > 3:
+			if self.scoreBox.currentImage > 2:
 				self.levelScore = 0
-				self.currentImage = 0
+                                self.rollsLeft = 10
 				self.oldTempLevel = self.player.level.tempLevel
-				self.scoreBox.render(self.currentImage, 0, 0)
+                                self.scoreBox.image = images['blank']
 			else:
-				self.scoreBox.render(self.scoreBox.currentImage, self.levelScore, self.player.totalScore)
+				self.scoreBox.render(self.scoreBox.currentImage)
 		#display level
-		if self.player.level.currLevel > self.oldLevel:
+		elif self.player.level.currLevel > self.oldLevel:
 			self.scoreFlag = True
 			self.levelBox.render(self.player.level.currLevel+1)
 			self.oldTempLevel = self.player.level.tempLevel
@@ -1198,7 +1220,9 @@ class Game(spyral.scene.Scene):
 				if self.goal.isReached(self.snake.nodes):
 					self.player.level.increase()
 					self.player.totalScore += self.levelScore
-					self.scoreBox.currentImage = 1
+					self.scoreBox = ScoreBox(self.levelScore, self.player.totalScore)
+                                        self.levelScore = 0
+                                        self.group.add(self.scoreBox)
 					self.goal.kill()
 					self.goal = Goal(self.player.level)
 					self.group.add(self.goal)
@@ -1329,14 +1353,15 @@ def init():
 
 	#load level images
 	images['level'] = []
-	images['clear'] = spyral.util.load_image('games/snake/Images/Other/blank.png')
-	images['level'].append(images['clear'].copy())
+	images['blank'] = spyral.util.load_image('games/snake/Images/Other/blank.png')
+	images['level'].append(images['blank'].copy())
 	for i in range(3):
 		images['level'].append( spyral.util.load_image('games/snake/Images/Other/Level' + str(i+1) +'.png'))
+        images['Final'] = spyral.util.load_image('games/snake/Images/Other/FinalScore.png')
 
 	#load scoreBox images
 	images['score'] = []
-	images['score'].append(images['clear'])
+	#images['score'].append(images['clear'])
 	for i in range(3):
 		images['score'].append( spyral.util.load_image('games/snake/Images/Other/ScoreBox' + str(i) +'.png'))
 	
@@ -1396,4 +1421,5 @@ def init():
 
 	#images['head'] = pygame.image.load("games/snake/Images/Adder/Adder_Head_E0.png")
 	#images['head'].fill(colors['head'])
+
 

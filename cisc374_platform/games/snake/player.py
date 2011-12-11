@@ -19,7 +19,8 @@ class Level(object):
 	def increase(self):
 		self.tempLevel += 1
 		if self.tempLevel % 3 == 0:
-			self.currLevel += 1
+			if self.currLevel < 2:
+				self.currLevel += 1
 
 class Player(object):
 	def __init__(self,name = "Adder",color = 0,level = Level()):

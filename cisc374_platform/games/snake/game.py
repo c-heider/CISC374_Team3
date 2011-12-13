@@ -1333,6 +1333,9 @@ def init():
 	images['button_quit'] = (spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Quit0.png')),
 						     spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Quit1.png')))
 	
+	images['button_help'] = (spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Help0.png')),
+						     spyral.util.load_image(path.join('games/snake/Images/Other/Buttons', 'Help1.png')))
+	
 	
 	images['adderColors'] = []
 	for i in range(3):

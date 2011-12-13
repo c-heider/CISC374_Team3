@@ -218,15 +218,18 @@ class Menu(spyral.scene.Scene):
 		
 		# character select button
 		character = ImageButton((center_x, geom['menu_character_y']),images['button_charselect'])
+
+		#help button
+		help = ImageButton((center_x - (center_x/3), geom['menu_quit_y']),images['button_help'])
 		
 		# quit button
-		quit = ImageButton((center_x, geom['menu_quit_y']),images['button_quit'])
+		quit = ImageButton((center_x + (center_x/3), geom['menu_quit_y']),images['button_quit'])
 		
-		self.buttons = [start, character, quit]
+		self.buttons = [start, character, help, quit]
 		self.selected_button = 0
 		self.buttons[self.selected_button].focus()
 		
-		self.group.add(start, character, quit)
+		self.group.add(start, character, help, quit)
 
 	def on_enter(self):
 		self.camera.set_background(images['menu_background'])
@@ -262,8 +265,13 @@ class Menu(spyral.scene.Scene):
 						# Character Select button clicked 
 						# move to CharacterSelect scene
 						spyral.director.push(CharacterSelect(self.player))
-						
+
 					elif self.selected_button == 2:
+						# Help button
+						#insert push tutorial scene here
+						print "help"
+						
+					elif self.selected_button == 3:
 						# Quit button clicked
 						pygame.mouse.set_visible(True)
 						exit(0)
